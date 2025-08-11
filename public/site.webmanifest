@@ -1,0 +1,35 @@
+{
+  "name": "AI Resume Maker - Free ATS-Friendly Resume Builder",
+  "short_name": "AI Resume Maker",
+  "description": "Create professional, ATS-friendly resumes with AI assistance. Free online resume builder with templates and PDF export.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "business", "education"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://storage.googleapis.com/project-screenshots-prod/ai-resume-maker.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ]
+} 
