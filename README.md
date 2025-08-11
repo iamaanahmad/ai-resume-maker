@@ -5,7 +5,7 @@
 **The Ultimate AI-Powered Resume Builder for Job Seekers**
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-00C853?style=for-the-badge&logo=vercel&logoColor=white)](https://freeresumebuilderai.hindustan.site)
-[![Production Ready](https://img.shields.io/badge/Production-Ready-4CAF50?style=for-the-badge&logo=check-circle&logoColor=white)](https://github.com/your-username/ai-resume-maker)
+[![Production Ready](https://img.shields.io/badge/Production-Ready-4CAF50?style=for-the-badge&logo=check-circle&logoColor=white)](https://github.com/iamaanahmad/ai-resume-maker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -79,7 +79,7 @@ Get an AI-powered evaluation of your resume with specific suggestions for improv
 
 ### 1️⃣ **Clone & Install**
 ```bash
-git clone https://github.com/your-username/ai-resume-maker.git
+git clone https://github.com/iamaanahmad/ai-resume-maker.git
 cd ai-resume-maker
 npm install
 ```
@@ -212,10 +212,10 @@ We love contributions! Here's how you can help:
 
 <div align="center">
 
-![GitHub stars](https://img.shields.io/github/stars/your-username/ai-resume-maker?style=social)
-![GitHub forks](https://img.shields.io/github/forks/your-username/ai-resume-maker?style=social)
-![GitHub issues](https://img.shields.io/github/issues/your-username/ai-resume-maker)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/your-username/ai-resume-maker)
+![GitHub stars](https://img.shields.io/github/stars/iamaanahmad/ai-resume-maker?style=social)
+![GitHub forks](https://img.shields.io/github/forks/iamaanahmad/ai-resume-maker?style=social)
+![GitHub issues](https://img.shields.io/github/issues/iamaanahmad/ai-resume-maker)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/iamaanahmad/ai-resume-maker)
 
 </div>
 
@@ -233,8 +233,8 @@ We love contributions! Here's how you can help:
 
 ## 📞 **Support & Community**
 
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/your-username/ai-resume-maker/issues)
-- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/your-username/ai-resume-maker/discussions)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/iamaanahmad/ai-resume-maker/issues)
+- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/iamaanahmad/ai-resume-maker/discussions)
 - 📧 **Email Support**: support@yourdomain.com
 - 💬 **Discord Community**: [Join our server](https://discord.gg/your-invite)
 
@@ -260,7 +260,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🎉 **Ready to Transform Your Career?**
 
-**[🚀 Try Live Demo](https://freeresumebuilderai.hindustan.site)** • **[⭐ Star This Repo](https://github.com/your-username/ai-resume-maker)** • **[🔧 Get Started](#getting-started)**
+**[🚀 Try Live Demo](https://freeresumebuilderai.hindustan.site)** • **[⭐ Star This Repo](https://github.com/iamaanahmad/ai-resume-maker)** • **[🔧 Get Started](#getting-started)**
 
 ---
 

@@ -9,9 +9,15 @@ import PrintIcon from './components/icons/PrintIcon';
 import DownloadIcon from './components/icons/DownloadIcon';
 import ShareIcon from './components/icons/ShareIcon';
 import SparklesIcon from './components/icons/SparklesIcon';
+import TargetIcon from './components/icons/TargetIcon';
+import DocumentTextIcon from './components/icons/DocumentTextIcon';
+import QuestionMarkCircleIcon from './components/icons/QuestionMarkCircleIcon';
 import Modal from './components/Modal';
 import SettingsPanel from './components/SettingsPanel';
 import VoiceInput from './components/VoiceInput';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import HeroSection from './components/HeroSection';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { logger } from './utils/logger';
@@ -376,67 +382,178 @@ const App: React.FC = () => {
 
 
     return (
-        <div className={`${isDarkMode ? 'dark bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100' : 'bg-gradient-to-br from-blue-50 via-white to-purple-50 text-slate-800'} min-h-screen font-sans flex flex-col transition-all duration-500`}>
-            <header className={`${isDarkMode ? 'bg-gray-800/95 border-gray-700' : 'bg-white/95 border-gray-200'} backdrop-blur-md shadow-lg border-b p-4 sticky top-0 z-20 transition-all duration-500`}>
-                <div className="container mx-auto flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-xl ${isDarkMode ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gradient-to-r from-blue-500 to-purple-500'} shadow-lg`}>
-                            <SparklesIcon className="w-6 h-6 text-white" />
+        <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <Header />
+
+            {/* Hero Section */}
+            <HeroSection />
+
+            {/* Toast Notification */}
+            {toast.visible && (
+                <div className="fixed top-20 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+                    {toast.message}
+                </div>
+            )}
+
+            {/* Main Resume Builder Section */}
+            <section id="builder" className="py-20 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Build Your Resume</h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                            Create a professional, ATS-friendly resume with our intelligent AI assistant. 
+                            Fill out the form on the left and see your resume come to life on the right.
+                        </p>
+                    </div>
+
+                    {/* Resume Builder Interface */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        {/* Left Column - Form */}
+                        <div className="space-y-6">
+                            <ResumeForm
+                                resumeData={resumeData}
+                                onDataChange={handleDataChange}
+                                onExperienceChange={handleExperienceChange}
+                                onEducationChange={handleEducationChange}
+                                addExperience={addExperience}
+                                addEducation={addEducation}
+                                removeExperience={removeExperience}
+                                removeEducation={removeEducation}
+                                handleAiRefine={handleAiRefine}
+                                isRefining={isRefining}
+                                rawResumeText={rawResumeText}
+                                onRawResumeTextChange={(e) => setRawResumeText(e.target.value)}
+                                onAutoFill={handleAutoFillAI}
+                                isAutoFilling={isAutoFilling}
+                                jobDescription={jobDescription}
+                                onJobDescriptionChange={(e) => setJobDescription(e.target.value)}
+                                onAnalyze={() => runAiTool('analyze')}
+                                onGenerateCoverLetter={() => runAiTool('coverLetter')}
+                                onGenerateInterviewPrep={() => runAiTool('interviewPrep')}
+                                isGeneratingTool={isGenerating}
+                                isBeginnerMode={isBeginnerMode}
+                                isDarkMode={isDarkMode}
+                                onVoiceInput={handleVoiceInput}
+                                isListening={isListening}
+                                onListeningChange={setIsListening}
+                            />
                         </div>
-                        <div>
-                            <h1 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'} tracking-tight`}>
-                                AI Resume Maker
-                            </h1>
-                            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                Professional CV Builder
-                            </p>
+
+                        {/* Right Column - Preview */}
+                        <div className="space-y-6">
+                            <ResumePreview
+                                resumeData={resumeData}
+                                isDarkMode={isDarkMode}
+                            />
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <button 
-                            onClick={() => runAiTool('scorecard')} 
-                            className={`group flex items-center gap-2 px-3 py-2 text-sm font-medium ${isDarkMode ? 'text-gray-300 bg-gray-700/80 hover:bg-gray-600 border-gray-600' : 'text-gray-700 bg-white/80 hover:bg-gray-50 border-gray-300'} border rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md`}
-                        >
-                            <span className="text-lg">📊</span> 
-                            <span className="hidden sm:inline">Score</span>
-                        </button>
-                        <button 
-                            onClick={handlePrint} 
-                            className={`group flex items-center gap-2 px-3 py-2 text-sm font-medium ${isDarkMode ? 'text-gray-300 bg-gray-700/80 hover:bg-gray-600 border-gray-600' : 'text-gray-700 bg-white/80 hover:bg-gray-50 border-gray-300'} border rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md`}
-                        >
-                            <PrintIcon className="w-4 h-4 group-hover:scale-110 transition-transform"/> 
-                            <span className="hidden sm:inline">Print</span>
-                        </button>
-                        <div className="relative group">
-                            <button className={`flex items-center gap-2 px-3 py-2 text-sm font-medium ${isDarkMode ? 'text-gray-300 bg-gray-700/80 hover:bg-gray-600 border-gray-600' : 'text-gray-700 bg-white/80 hover:bg-gray-50 border-gray-300'} border rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md`}>
-                                <DownloadIcon className="w-4 h-4 group-hover:scale-110 transition-transform"/> 
-                                <span className="hidden sm:inline">Export</span>
-                                <svg className="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                </svg>
-                            </button>
-                            <div className={`absolute right-0 mt-2 w-32 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-30`}>
-                                <button onClick={handleDownloadPdf} className={`w-full text-left px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'} rounded-t-xl transition-colors`}>
-                                    📄 PDF
-                                </button>
-                                <button onClick={handleDownloadDocx} className={`w-full text-left px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'} rounded-b-xl transition-colors`}>
-                                    📝 DOCX
+                </div>
+            </section>
+
+            {/* AI Power-Ups Section */}
+            <section id="ai-features" className="py-20 bg-gray-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">AI Power-Ups</h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                            Supercharge your resume with intelligent AI tools that give you the competitive edge
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* AI Quick Fill */}
+                        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <SparklesIcon className="w-8 h-8 text-blue-600" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Quick Fill</h3>
+                                <p className="text-gray-600 mb-4">Paste your resume and let AI organize it perfectly</p>
+                                <textarea
+                                    value={rawResumeText}
+                                    onChange={(e) => setRawResumeText(e.target.value)}
+                                    placeholder="Paste your resume text here..."
+                                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    rows={4}
+                                />
+                                <button
+                                    onClick={handleAutoFillAI}
+                                    disabled={isAutoFilling}
+                                    className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 transition-all duration-200 font-medium"
+                                >
+                                    {isAutoFilling ? 'Processing...' : 'Auto-Fill with AI'}
                                 </button>
                             </div>
                         </div>
-                        <button 
-                            onClick={handleShare} 
-                            className={`group flex items-center gap-2 px-3 py-2 text-sm font-medium ${isDarkMode ? 'text-gray-300 bg-gray-700/80 hover:bg-gray-600 border-gray-600' : 'text-gray-700 bg-white/80 hover:bg-gray-50 border-gray-300'} border rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md`}
-                        >
-                            <ShareIcon className="w-4 h-4 group-hover:scale-110 transition-transform"/> 
-                            <span className="hidden sm:inline">Share</span>
-                        </button>
+
+                        {/* Job Match Analysis */}
+                        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <TargetIcon className="w-8 h-8 text-green-600" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Job Match Analysis</h3>
+                                <p className="text-gray-600 mb-4">See how well your resume matches a job description</p>
+                                <textarea
+                                    value={jobDescription}
+                                    onChange={(e) => setJobDescription(e.target.value)}
+                                    placeholder="Paste job description here..."
+                                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    rows={4}
+                                />
+                                <button
+                                    onClick={() => runAiTool('analyze')}
+                                    disabled={isGenerating}
+                                    className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 disabled:opacity-50 transition-all duration-200 font-medium"
+                                >
+                                    {isGenerating ? 'Analyzing...' : 'Analyze Match'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Cover Letter Generator */}
+                        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <DocumentTextIcon className="w-8 h-8 text-purple-600" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Cover Letter</h3>
+                                <p className="text-gray-600 mb-4">Generate a compelling, personalized cover letter</p>
+                                <button
+                                    onClick={() => runAiTool('coverLetter')}
+                                    disabled={isGenerating || !jobDescription.trim()}
+                                    className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 transition-all duration-200 font-medium"
+                                >
+                                    {isGenerating ? 'Generating...' : 'Generate Cover Letter'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Interview Prep */}
+                        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <QuestionMarkCircleIcon className="w-8 h-8 text-orange-600" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Interview Prep</h3>
+                                <p className="text-gray-600 mb-4">Get likely interview questions for your role</p>
+                                <button
+                                    onClick={() => runAiTool('interviewPrep')}
+                                    disabled={isGenerating || !jobDescription.trim()}
+                                    className="w-full px-4 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 transition-all duration-200 font-medium"
+                                >
+                                    {isGenerating ? 'Preparing...' : 'Get Questions'}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </header>
+            </section>
 
-            <main className="container mx-auto p-4 md:p-8 grid grid-cols-1 xl:grid-cols-5 gap-8 items-start flex-grow">
-                <div className="xl:col-span-2 lg:sticky lg:top-28 space-y-6">
+            {/* Settings Panel */}
+            <section className="py-16 bg-white">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <SettingsPanel
                         toneStyle={toneStyle}
                         onToneStyleChange={setToneStyle}
@@ -445,214 +562,23 @@ const App: React.FC = () => {
                         isBeginnerMode={isBeginnerMode}
                         onBeginnerModeToggle={() => setIsBeginnerMode(!isBeginnerMode)}
                     />
-                     <ResumeForm 
-                        resumeData={resumeData}
-                        onDataChange={handleDataChange}
-                        onExperienceChange={handleExperienceChange}
-                        addExperience={addExperience}
-                        removeExperience={removeExperience}
-                        onEducationChange={handleEducationChange}
-                        addEducation={addEducation}
-                        removeEducation={removeEducation}
-                        handleAiRefine={handleAiRefine}
-                        isRefining={isRefining}
-                        rawResumeText={rawResumeText}
-                        onRawResumeTextChange={(e) => setRawResumeText(e.target.value)}
-                        onAutoFill={handleAutoFillAI}
-                        isAutoFilling={isAutoFilling}
-                        // AI Power-up Props
-                        jobDescription={jobDescription}
-                        onJobDescriptionChange={(e) => setJobDescription(e.target.value)}
-                        onAnalyze={() => runAiTool('analyze')}
-                        onGenerateCoverLetter={() => runAiTool('coverLetter')}
-                        onGenerateInterviewPrep={() => runAiTool('interviewPrep')}
-                        isGeneratingTool={isGenerating}
-                        // New Props
-                        isBeginnerMode={isBeginnerMode}
-                        isDarkMode={isDarkMode}
-                        onVoiceInput={handleVoiceInput}
-                        isListening={isListening}
-                        onListeningChange={setIsListening}
-                    />
                 </div>
-                <div className="xl:col-span-3 h-full">
-                    <div className={`sticky top-28 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/50'} backdrop-blur-sm rounded-2xl p-6 shadow-2xl border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                                Live Preview
-                            </h2>
-                            <div className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${isDarkMode ? 'bg-green-400' : 'bg-green-500'} animate-pulse`}></div>
-                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                    Auto-updating
-                                </span>
-                            </div>
-                        </div>
-                        <div id="resume-preview-container-wrapper" className="w-full transform scale-90 origin-top transition-all duration-500 hover:scale-95">
-                          <ResumePreview resumeData={resumeData} isDarkMode={isDarkMode} />
-                        </div>
-                    </div>
-                </div>
-            </main>
-            
+            </section>
+
+            {/* Footer */}
+            <Footer />
+
+            {/* Modal */}
             <Modal
                 isOpen={modalState.isOpen}
-                onClose={() => setModalState({ ...modalState, isOpen: false })}
-                title={
-                    modalState.type === 'ANALYSIS' ? '🎯 Resume Analysis' :
-                    modalState.type === 'COVER_LETTER' ? '📝 Generated Cover Letter' :
-                    modalState.type === 'INTERVIEW_PREP' ? '❓ Interview Prep Questions' :
-                    modalState.type === 'SCORECARD' ? '📊 Resume Scorecard' : ''
-                }
-                isDarkMode={isDarkMode}
+                onClose={() => setModalState({ isOpen: false, type: null, content: null })}
+                title={modalState.type === 'ANALYSIS' ? 'Job Match Analysis' : 
+                       modalState.type === 'COVER_LETTER' ? 'Cover Letter' : 
+                       modalState.type === 'INTERVIEW_PREP' ? 'Interview Questions' : 
+                       modalState.type === 'SCORECARD' ? 'Resume Scorecard' : 'AI Tool Result'}
             >
                 {renderModalContent()}
             </Modal>
-
-            {toast.visible && (
-                <div className={`fixed bottom-6 right-6 ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'} border text-gray-800 dark:text-white py-4 px-6 rounded-2xl shadow-2xl animate-fade-in-out z-50 backdrop-blur-md max-w-sm`}>
-                    <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span className="font-medium">{toast.message}</span>
-                    </div>
-                </div>
-            )}
-             <footer className={`${isDarkMode ? 'bg-gray-900/95 border-gray-700' : 'bg-white/95 border-gray-200'} backdrop-blur-md border-t mt-16 py-12 transition-all duration-500`}>
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        <div className="md:col-span-2">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className={`p-2 rounded-xl ${isDarkMode ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gradient-to-r from-blue-500 to-purple-500'} shadow-lg`}>
-                                    <SparklesIcon className="w-5 h-5 text-white" />
-                                </div>
-                                <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
-                                    AI Resume Maker
-                                </h3>
-                            </div>
-                            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-4 max-w-md`}>
-                                Create professional, ATS-friendly resumes with the power of AI. Get hired faster with our intelligent resume builder.
-                            </p>
-                            <div className="flex items-center gap-4">
-                                <div className={`px-3 py-1 rounded-full text-xs font-medium ${isDarkMode ? 'bg-green-900/50 text-green-400 border border-green-800' : 'bg-green-100 text-green-800 border border-green-200'}`}>
-                                    ✨ AI-Powered
-                                </div>
-                                <div className={`px-3 py-1 rounded-full text-xs font-medium ${isDarkMode ? 'bg-blue-900/50 text-blue-400 border border-blue-800' : 'bg-blue-100 text-blue-800 border border-blue-200'}`}>
-                                    🔒 Privacy-First
-                                </div>
-                                <div className={`px-3 py-1 rounded-full text-xs font-medium ${isDarkMode ? 'bg-purple-900/50 text-purple-400 border border-purple-800' : 'bg-purple-100 text-purple-800 border border-purple-200'}`}>
-                                    📱 Mobile-Ready
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'} mb-4`}>Features</h4>
-                            <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-green-500">✓</span> AI Content Enhancement
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-green-500">✓</span> ATS Optimization
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-green-500">✓</span> Multiple Export Formats
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-green-500">✓</span> Voice Input Support
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-green-500">✓</span> Dark Mode
-                                </li>
-                            </ul>
-                        </div>
-                        
-                        <div>
-                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'} mb-4`}>AI Tools</h4>
-                            <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-blue-500">🎯</span> Job Match Analysis
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-purple-500">📝</span> Cover Letter Generator
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-orange-500">❓</span> Interview Prep
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-green-500">📊</span> Resume Scorecard
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <span className="text-pink-500">🎨</span> Tone Customization
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div className={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} mt-8 pt-8 flex flex-col md:flex-row justify-between items-center`}>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                            &copy; {new Date().getFullYear()} freeresumebuilderai.hindustan.site. All Rights Reserved.
-                        </p>
-                        <div className="flex items-center gap-6 mt-4 md:mt-0">
-                            <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                                Made with ❤️ for job seekers worldwide
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-
-            <style>{`
-                @media print {
-                    #resume-preview-container-wrapper {
-                        transform: scale(1) !important;
-                    }
-                }
-                @keyframes fade-in-out {
-                    0% { opacity: 0; transform: translateY(10px); }
-                    10% { opacity: 1; transform: translateY(0); }
-                    90% { opacity: 1; transform: translateY(0); }
-                    100% { opacity: 0; transform: translateY(10px); }
-                }
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                @keyframes slideUp {
-                    from { 
-                        opacity: 0; 
-                        transform: translateY(20px) scale(0.95); 
-                    }
-                    to { 
-                        opacity: 1; 
-                        transform: translateY(0) scale(1); 
-                    }
-                }
-                @keyframes float {
-                    0%, 100% { transform: translateY(0px); }
-                    50% { transform: translateY(-10px); }
-                }
-                .animate-fade-in-out {
-                    animation: fade-in-out 4s ease-in-out forwards;
-                }
-                .animate-fadeIn {
-                    animation: fadeIn 0.3s ease-out;
-                }
-                .animate-slideUp {
-                    animation: slideUp 0.3s ease-out;
-                }
-                .animate-float {
-                    animation: float 3s ease-in-out infinite;
-                }
-                .glass-effect {
-                    backdrop-filter: blur(10px);
-                    background: rgba(255, 255, 255, 0.1);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                }
-                .dark .glass-effect {
-                    background: rgba(0, 0, 0, 0.2);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                }
-            `}</style>
         </div>
     );
 };
