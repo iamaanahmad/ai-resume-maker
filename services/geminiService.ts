@@ -1,5 +1,5 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AiRefineType, ResumeData, WorkExperience, Education, ResumeAnalysis, InterviewQuestion, ResumeScorecard } from '../types';
 import { logger } from '../utils/logger';
 
@@ -43,57 +43,51 @@ export const refineWithAI = async (type: AiRefineType, textToRefine: string, ton
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = getPrompt(type, textToRefine, toneStyle);
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        temperature: 0.5,
-        topP: 0.95,
-        topK: 64,
-      },
-    });
-
-    return response.text.trim();
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text().trim();
   } catch (error) {
     logger.error("Error refining text with AI:", error);
     throw new Error("Failed to get a response from the AI. Please try again.");
   }
 };
 
+// Schema definitions for structured responses
 const resumeSchema = {
-  type: Type.OBJECT,
+  type: "object",
   properties: {
     personalDetails: {
-      type: Type.OBJECT,
+      type: "object",
       properties: {
-        fullName: { type: Type.STRING },
-        email: { type: Type.STRING },
-        phoneNumber: { type: Type.STRING },
-        address: { type: Type.STRING },
-        linkedin: { type: Type.STRING },
-        website: { type: Type.STRING },
+        fullName: { type: "string" },
+        email: { type: "string" },
+        phoneNumber: { type: "string" },
+        address: { type: "string" },
+        linkedin: { type: "string" },
+        website: { type: "string" },
       },
     },
     summary: {
-      type: Type.STRING,
+      type: "string",
       description: "A compelling and concise professional summary, 3-4 sentences long.",
     },
     experience: {
-      type: Type.ARRAY,
+      type: "array",
       description: "A list of professional experiences.",
       items: {
-        type: Type.OBJECT,
+        type: "object",
         properties: {
-          jobTitle: { type: Type.STRING },
-          company: { type: Type.STRING },
-          location: { type: Type.STRING },
-          startDate: { type: Type.STRING },
-          endDate: { type: Type.STRING },
+          jobTitle: { type: "string" },
+          company: { type: "string" },
+          location: { type: "string" },
+          startDate: { type: "string" },
+          endDate: { type: "string" },
           description: {
-            type: Type.STRING,
+            type: "string",
             description: "A description of responsibilities and achievements, formatted as bullet points starting with an action verb. Each bullet point should be on a new line.",
           },
         },
@@ -101,21 +95,21 @@ const resumeSchema = {
       },
     },
     education: {
-      type: Type.ARRAY,
+      type: "array",
       description: "A list of educational qualifications.",
       items: {
-        type: Type.OBJECT,
+        type: "object",
         properties: {
-          degree: { type: Type.STRING },
-          school: { type: Type.STRING },
-          location: { type: Type.STRING },
-          graduationDate: { type: Type.STRING },
+          degree: { type: "string" },
+          school: { type: "string" },
+          location: { type: "string" },
+          graduationDate: { type: "string" },
         },
         required: ['degree', 'school', 'graduationDate']
       },
     },
     skills: {
-      type: Type.STRING,
+      type: "string",
       description: "A comma-separated list of relevant skills.",
     },
   },
@@ -129,32 +123,67 @@ export const parseAndRefineWithAI = async (text: string): Promise<Partial<Omit<R
     return {};
   }
 
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
-  const prompt = `You are an expert resume assistant. A user has provided their resume details in a free-form text, potentially in a language other than English. Your task is to:
+  try {
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+      }
+    });
+
+    const prompt = `You are an expert resume assistant. A user has provided their resume details in a free-form text, potentially in a language other than English. Your task is to:
 1. Parse this text to identify all relevant sections: Personal Details, Professional Summary, Work Experience, Education, and Skills.
 2. If the text is not in English, translate the content to English.
 3. Refine the content to be professional and ATS-friendly.
     - For the summary, create a compelling overview of the candidate.
     - For work experience descriptions, rewrite them using strong action verbs and focus on quantifiable achievements. Format as bullet points, with each bullet on a new line (using '\\n').
     - For skills, create a comma-separated list.
-4. Structure your final output in the provided JSON schema.
-5. If a piece of information (e.g., website, or an entire section like education) is not present in the input text, omit the corresponding field from the output JSON. Do not invent information.
+4. Structure your final output as a JSON object with the following structure:
+{
+  "personalDetails": {
+    "fullName": "string",
+    "email": "string", 
+    "phoneNumber": "string",
+    "address": "string",
+    "linkedin": "string (optional)",
+    "website": "string (optional)"
+  },
+  "summary": "string",
+  "experience": [
+    {
+      "jobTitle": "string",
+      "company": "string", 
+      "location": "string",
+      "startDate": "string",
+      "endDate": "string",
+      "description": "string with bullet points separated by \\n"
+    }
+  ],
+  "education": [
+    {
+      "degree": "string",
+      "school": "string",
+      "location": "string", 
+      "graduationDate": "string"
+    }
+  ],
+  "skills": "comma-separated string"
+}
+5. If a piece of information is not present in the input text, omit the corresponding field from the output JSON. Do not invent information.
 
 Here is the user's input text:
-"${text}"`;
+"${text}"
 
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: resumeSchema,
-      },
-    });
+Return only the JSON object, no additional text.`;
 
-    const jsonString = response.text.trim();
-    return JSON.parse(jsonString);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const jsonString = response.text().trim();
+
+    // Clean up the response to ensure it's valid JSON
+    const cleanedJson = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(cleanedJson);
   } catch (error) {
     logger.error("Error parsing and refining with AI:", error);
     throw new Error("The AI failed to process your resume text. It might be too complex or in an unexpected format. Please try simplifying it.");
@@ -162,12 +191,12 @@ Here is the user's input text:
 };
 
 const analysisSchema = {
-  type: Type.OBJECT,
+  type: "object",
   properties: {
-    matchScore: { type: Type.NUMBER, description: "A score from 0-100 indicating how well the resume matches the job description." },
-    overallFeedback: { type: Type.STRING, description: "A concise, encouraging summary of the resume's fit for the role." },
-    strengths: { type: Type.ARRAY, items: { type: Type.STRING }, description: "A list of 2-3 key strengths from the resume that align with the job." },
-    areasForImprovement: { type: Type.ARRAY, items: { type: Type.STRING }, description: "A list of 2-3 specific, actionable suggestions for improving the resume's alignment." }
+    matchScore: { type: "number", description: "A score from 0-100 indicating how well the resume matches the job description." },
+    overallFeedback: { type: "string", description: "A concise, encouraging summary of the resume's fit for the role." },
+    strengths: { type: "array", items: { type: "string" }, description: "A list of 2-3 key strengths from the resume that align with the job." },
+    areasForImprovement: { type: "array", items: { type: "string" }, description: "A list of 2-3 specific, actionable suggestions for improving the resume's alignment." }
   },
   required: ['matchScore', 'overallFeedback', 'strengths', 'areasForImprovement']
 };
@@ -175,33 +204,55 @@ const analysisSchema = {
 export const analyzeResumeAgainstJob = async (resumeData: ResumeData, jobDescription: string): Promise<ResumeAnalysis> => {
   if (!API_KEY) throw new Error("VITE_API_KEY environment variable not set.");
 
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
-  const prompt = `Analyze the provided resume against the job description and return a detailed analysis.
+  try {
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+      }
+    });
+
+    const prompt = `Analyze the provided resume against the job description and return a detailed analysis in JSON format.
     
     Resume Data: ${JSON.stringify(resumeData)}
     
     Job Description: "${jobDescription}"
 
-    Provide a concise analysis based on the JSON schema. The feedback should be constructive and professional. The match score should be a realistic assessment.`;
+    Return a JSON object with this structure:
+    {
+      "matchScore": number (0-100),
+      "overallFeedback": "string - concise, encouraging summary",
+      "strengths": ["string", "string", "string"] - 2-3 key strengths,
+      "areasForImprovement": ["string", "string", "string"] - 2-3 actionable suggestions
+    }
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: analysisSchema,
-    },
-  });
+    The feedback should be constructive and professional. The match score should be a realistic assessment.`;
 
-  const jsonString = response.text.trim();
-  return JSON.parse(jsonString);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const jsonString = response.text().trim();
+    const cleanedJson = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(cleanedJson);
+  } catch (error) {
+    logger.error("Error analyzing resume:", error);
+    throw new Error("Failed to analyze resume. Please try again.");
+  }
 };
 
 export const generateCoverLetter = async (resumeData: ResumeData, jobDescription: string): Promise<string> => {
   if (!API_KEY) throw new Error("VITE_API_KEY environment variable not set.");
 
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
-  const prompt = `You are a professional career coach. Write a compelling and professional cover letter based on the candidate's resume and the provided job description.
+  try {
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        temperature: 0.7,
+      }
+    });
+
+    const prompt = `You are a professional career coach. Write a compelling and professional cover letter based on the candidate's resume and the provided job description.
     
     The cover letter should:
     1. Be addressed to a "Hiring Manager" if no specific name is available.
@@ -215,24 +266,22 @@ export const generateCoverLetter = async (resumeData: ResumeData, jobDescription
     
     Job Description: "${jobDescription}"`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-    config: {
-      temperature: 0.7,
-    },
-  });
-
-  return response.text.trim();
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text().trim();
+  } catch (error) {
+    logger.error("Error generating cover letter:", error);
+    throw new Error("Failed to generate cover letter. Please try again.");
+  }
 };
 
 const questionsSchema = {
-  type: Type.ARRAY,
+  type: "array",
   items: {
-    type: Type.OBJECT,
+    type: "object",
     properties: {
-      question: { type: Type.STRING, description: "The interview question." },
-      reasoning: { type: Type.STRING, description: "A brief explanation of why this question might be asked, based on the resume and job description." }
+      question: { type: "string", description: "The interview question." },
+      reasoning: { type: "string", description: "A brief explanation of why this question might be asked, based on the resume and job description." }
     },
     required: ['question', 'reasoning']
   }
@@ -241,8 +290,16 @@ const questionsSchema = {
 export const generateInterviewQuestions = async (resumeData: ResumeData, jobDescription: string): Promise<InterviewQuestion[]> => {
   if (!API_KEY) throw new Error("VITE_API_KEY environment variable not set.");
 
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
-  const prompt = `You are an experienced hiring manager. Based on the candidate's resume and the job description, generate a list of 5-7 likely interview questions.
+  try {
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+      }
+    });
+
+    const prompt = `You are an experienced hiring manager. Based on the candidate's resume and the job description, generate a list of 5-7 likely interview questions.
     
     For each question, provide a brief reasoning for why it would be asked. The questions should cover a mix of behavioral, technical, and situational topics relevant to the role.
     
@@ -250,29 +307,33 @@ export const generateInterviewQuestions = async (resumeData: ResumeData, jobDesc
     
     Job Description: "${jobDescription}"
     
-    Return the data in the specified JSON schema.`;
+    Return a JSON array with this structure:
+    [
+      {
+        "question": "string - the interview question",
+        "reasoning": "string - brief explanation why this would be asked"
+      }
+    ]`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: questionsSchema,
-    },
-  });
-
-  const jsonString = response.text.trim();
-  return JSON.parse(jsonString);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const jsonString = response.text().trim();
+    const cleanedJson = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(cleanedJson);
+  } catch (error) {
+    logger.error("Error generating interview questions:", error);
+    throw new Error("Failed to generate interview questions. Please try again.");
+  }
 };
 
 const scorecardSchema = {
-  type: Type.OBJECT,
+  type: "object",
   properties: {
-    overallScore: { type: Type.NUMBER, description: "Overall resume score from 0-100." },
-    atsCompatibility: { type: Type.NUMBER, description: "ATS compatibility score from 0-100." },
-    keywordDensity: { type: Type.NUMBER, description: "Keyword density score from 0-100." },
-    clarity: { type: Type.NUMBER, description: "Clarity and readability score from 0-100." },
-    suggestions: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3-5 specific suggestions for improvement." }
+    overallScore: { type: "number", description: "Overall resume score from 0-100." },
+    atsCompatibility: { type: "number", description: "ATS compatibility score from 0-100." },
+    keywordDensity: { type: "number", description: "Keyword density score from 0-100." },
+    clarity: { type: "number", description: "Clarity and readability score from 0-100." },
+    suggestions: { type: "array", items: { type: "string" }, description: "3-5 specific suggestions for improvement." }
   },
   required: ['overallScore', 'atsCompatibility', 'keywordDensity', 'clarity', 'suggestions']
 };
@@ -280,8 +341,16 @@ const scorecardSchema = {
 export const generateResumeScorecard = async (resumeData: ResumeData): Promise<ResumeScorecard> => {
   if (!API_KEY) throw new Error("VITE_API_KEY environment variable not set.");
 
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
-  const prompt = `You are an expert ATS and resume evaluation specialist. Analyze the provided resume and generate a comprehensive scorecard.
+  try {
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+      }
+    });
+
+    const prompt = `You are an expert ATS and resume evaluation specialist. Analyze the provided resume and generate a comprehensive scorecard.
 
     Evaluate the resume on:
     1. Overall Score: General quality and completeness
@@ -289,19 +358,26 @@ export const generateResumeScorecard = async (resumeData: ResumeData): Promise<R
     3. Keyword Density: Appropriate use of industry keywords
     4. Clarity: How clear and readable the content is
 
+    Return a JSON object with this structure:
+    {
+      "overallScore": number (0-100),
+      "atsCompatibility": number (0-100),
+      "keywordDensity": number (0-100),
+      "clarity": number (0-100),
+      "suggestions": ["string", "string", "string"] - 3-5 specific suggestions
+    }
+
     Provide specific, actionable suggestions for improvement.
     
     Resume Data: ${JSON.stringify(resumeData)}`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: scorecardSchema,
-    },
-  });
-
-  const jsonString = response.text.trim();
-  return JSON.parse(jsonString);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const jsonString = response.text().trim();
+    const cleanedJson = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(cleanedJson);
+  } catch (error) {
+    logger.error("Error generating scorecard:", error);
+    throw new Error("Failed to generate resume scorecard. Please try again.");
+  }
 };

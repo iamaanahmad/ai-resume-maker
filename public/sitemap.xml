@@ -1,71 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-
-  <!-- Homepage -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://freeresumebuilderai.hindustan.site/</loc>
-    <lastmod>2025-01-27</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2025-01-29</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-
-  <!-- Main Features -->
   <url>
-    <loc>https://freeresumebuilderai.hindustan.site/#features</loc>
-    <lastmod>2025-01-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Resume Builder Tool -->
-  <url>
-    <loc>https://freeresumebuilderai.hindustan.site/#builder</loc>
-    <lastmod>2025-01-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Templates -->
-  <url>
-    <loc>https://freeresumebuilderai.hindustan.site/#templates</loc>
-    <lastmod>2025-01-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- AI Features -->
-  <url>
-    <loc>https://freeresumebuilderai.hindustan.site/#ai-features</loc>
-    <lastmod>2025-01-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Export Options -->
-  <url>
-    <loc>https://freeresumebuilderai.hindustan.site/#export</loc>
-    <lastmod>2025-01-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <!-- Help & Support -->
-  <url>
-    <loc>https://freeresumebuilderai.hindustan.site/#help</loc>
-    <lastmod>2025-01-27</lastmod>
+    <loc>https://freeresumebuilderai.hindustan.site/privacy</loc>
+    <lastmod>2025-01-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
-  <!-- About -->
   <url>
-    <loc>https://freeresumebuilderai.hindustan.site/#about</loc>
-    <lastmod>2025-01-27</lastmod>
+    <loc>https://freeresumebuilderai.hindustan.site/terms</loc>
+    <lastmod>2025-01-29</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
+    <priority>0.5</priority>
   </url>
-
-</urlset> 
+</urlset>

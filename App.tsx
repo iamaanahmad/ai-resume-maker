@@ -18,6 +18,8 @@ import VoiceInput from './components/VoiceInput';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HeroSection from './components/HeroSection';
+import DonateSection from './components/DonateSection';
+import Router from './components/Router';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { logger } from './utils/logger';
@@ -261,6 +263,49 @@ const App: React.FC = () => {
             showToast("Could not generate DOCX.");
         }
     };
+
+    const handleDownloadJson = () => {
+        try {
+            const dataStr = JSON.stringify(resumeData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${resumeData.personalDetails.fullName.replace(/ /g, '_') || 'resume'}_data.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            showToast('Resume data saved successfully!');
+        } catch (error) {
+            logger.error("Error downloading JSON:", error);
+            showToast("Could not save resume data.");
+        }
+    };
+
+    const handleLoadJson = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target?.result as string);
+                        setResumeData(data);
+                        showToast('Resume data loaded successfully!');
+                    } catch (error) {
+                        logger.error("Error loading JSON:", error);
+                        showToast("Could not load resume data. Please check the file format.");
+                    }
+                };
+                reader.readAsText(file);
+            }
+        };
+        input.click();
+    };
     
     const handleShare = async () => {
         const resumeText = formatResumeAsText(resumeData);
@@ -382,7 +427,8 @@ const App: React.FC = () => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <Router>
+            <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <Header />
 
@@ -408,7 +454,7 @@ const App: React.FC = () => {
                     </div>
 
                     {/* Resume Builder Interface */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                         {/* Left Column - Form */}
                         <div className="space-y-6">
                             <ResumeForm
@@ -442,6 +488,51 @@ const App: React.FC = () => {
 
                         {/* Right Column - Preview */}
                         <div className="space-y-6">
+                            {/* Export Buttons */}
+                            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Export Your Resume</h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                                    <button
+                                        onClick={handleDownloadPdf}
+                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium text-sm"
+                                    >
+                                        <DownloadIcon className="w-4 h-4" />
+                                        PDF
+                                    </button>
+                                    <button
+                                        onClick={handleDownloadDocx}
+                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-sm"
+                                    >
+                                        <DownloadIcon className="w-4 h-4" />
+                                        DOCX
+                                    </button>
+                                    <button
+                                        onClick={handlePrint}
+                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium text-sm"
+                                    >
+                                        <PrintIcon className="w-4 h-4" />
+                                        Print
+                                    </button>
+                                    <button
+                                        onClick={handleDownloadJson}
+                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium text-sm"
+                                    >
+                                        <DownloadIcon className="w-4 h-4" />
+                                        Save
+                                    </button>
+                                    <button
+                                        onClick={handleLoadJson}
+                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium text-sm"
+                                    >
+                                        📁
+                                        Load
+                                    </button>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-3">
+                                    Export as PDF/DOCX for applications, print directly, or save/load your resume data.
+                                </p>
+                            </div>
+
                             <ResumePreview
                                 resumeData={resumeData}
                                 isDarkMode={isDarkMode}
@@ -461,9 +552,9 @@ const App: React.FC = () => {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {/* AI Quick Fill */}
-                        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <SparklesIcon className="w-8 h-8 text-blue-600" />
@@ -488,7 +579,7 @@ const App: React.FC = () => {
                         </div>
 
                         {/* Job Match Analysis */}
-                        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <TargetIcon className="w-8 h-8 text-green-600" />
@@ -513,7 +604,7 @@ const App: React.FC = () => {
                         </div>
 
                         {/* Cover Letter Generator */}
-                        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <DocumentTextIcon className="w-8 h-8 text-purple-600" />
@@ -531,7 +622,7 @@ const App: React.FC = () => {
                         </div>
 
                         {/* Interview Prep */}
-                        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                             <div className="text-center">
                                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <QuestionMarkCircleIcon className="w-8 h-8 text-orange-600" />
@@ -544,6 +635,28 @@ const App: React.FC = () => {
                                     className="w-full px-4 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 transition-all duration-200 font-medium"
                                 >
                                     {isGenerating ? 'Preparing...' : 'Get Questions'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Second Row - Resume Scorecard */}
+                    <div className="mt-8 flex justify-center">
+                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 max-w-md w-full">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Resume Scorecard</h3>
+                                <p className="text-gray-600 mb-4">Get an AI-powered evaluation of your resume with improvement suggestions</p>
+                                <button
+                                    onClick={() => runAiTool('scorecard')}
+                                    disabled={isGenerating}
+                                    className="w-full px-4 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 disabled:opacity-50 transition-all duration-200 font-medium"
+                                >
+                                    {isGenerating ? 'Analyzing...' : 'Get Scorecard'}
                                 </button>
                             </div>
                         </div>
@@ -565,6 +678,9 @@ const App: React.FC = () => {
                 </div>
             </section>
 
+            {/* Donate Section */}
+            <DonateSection />
+
             {/* Footer */}
             <Footer />
 
@@ -579,7 +695,8 @@ const App: React.FC = () => {
             >
                 {renderModalContent()}
             </Modal>
-        </div>
+            </div>
+        </Router>
     );
 };
 

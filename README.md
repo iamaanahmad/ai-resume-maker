@@ -103,6 +103,23 @@ npm run dev
 # Start building your killer resume!
 ```
 
+### 🔧 **Production Build**
+```bash
+npm run build
+npm run preview
+```
+
+### ✅ **Features Working**
+- ✅ AI Quick Fill - Paste resume text and auto-populate form
+- ✅ AI Content Refinement - Enhance summaries and experience descriptions  
+- ✅ Job Match Analysis - Compare resume against job descriptions
+- ✅ Cover Letter Generator - Create personalized cover letters
+- ✅ Interview Prep - Get likely interview questions
+- ✅ Resume Scorecard - AI-powered resume evaluation
+- ✅ PDF & DOCX Export - Download in multiple formats
+- ✅ Responsive Design - Works on all devices
+- ✅ Privacy-First - No data stored on servers
+
 ---
 
 ## 🎨 **See It in Action**
@@ -188,6 +205,17 @@ npm run type-check   # TypeScript validation
 - 📊 **No tracking** - Built with privacy in mind
 
 ---
+
+## 💝 **Support This Project**
+
+AI Resume Maker is completely free and always will be! If this tool helped you land your dream job, consider supporting us:
+
+- 💖 **[Donate via PayPal](https://www.paypal.me/iamaanahmad)** - Help keep the service free for everyone
+- ⭐ **Star this repository** - Show your appreciation
+- 🔄 **Share with friends** - Help others discover this tool
+- 📝 **Leave feedback** - Help us improve
+
+Every contribution, no matter how small, helps us maintain and improve this free service for job seekers worldwide!
 
 ## 🤝 **Contributing**
 

@@ -36,7 +36,7 @@ module.exports = {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          ai: ['@google/genai'],
+          ai: ['@google/generative-ai'],
           pdf: ['html2canvas', 'jspdf']
         }
       }

@@ -4,10 +4,10 @@ Allow: /
 # Sitemap
 Sitemap: https://freeresumebuilderai.hindustan.site/sitemap.xml
 
-# Crawl-delay for respectful crawling
+# Crawl-delay for better server performance
 Crawl-delay: 1
 
-# Allow all major search engines
+# Allow all search engines to index the site
 User-agent: Googlebot
 Allow: /
 
@@ -19,30 +19,3 @@ Allow: /
 
 User-agent: DuckDuckBot
 Allow: /
-
-User-agent: Baiduspider
-Allow: /
-
-User-agent: YandexBot
-Allow: /
-
-# Block common bad bots
-User-agent: AhrefsBot
-Disallow: /
-
-User-agent: SemrushBot
-Disallow: /
-
-User-agent: MJ12bot
-Disallow: /
-
-User-agent: DotBot
-Disallow: /
-
-# Block admin and private areas (if any)
-Disallow: /admin/
-Disallow: /private/
-Disallow: /api/
-Disallow: /.env
-Disallow: /package.json
-Disallow: /node_modules/ 

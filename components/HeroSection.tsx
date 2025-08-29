@@ -34,14 +34,14 @@ const HeroSection: React.FC = () => {
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+            <a href="#builder" className="px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 inline-flex items-center">
               Start Building Free
-              <SparklesIcon className="w-5 h-5 ml-2 inline" />
-            </button>
-            <button className="px-8 py-4 border-2 border-gray-300 text-gray-700 text-lg font-semibold rounded-xl hover:border-blue-600 hover:text-blue-600 transition-all duration-200 bg-white">
+              <SparklesIcon className="w-5 h-5 ml-2" />
+            </a>
+            <button className="px-10 py-5 border-2 border-gray-300 text-gray-700 text-lg font-semibold rounded-2xl hover:border-blue-600 hover:text-blue-600 transition-all duration-200 bg-white hover:shadow-lg transform hover:-translate-y-1 inline-flex items-center">
               Watch Demo
-              <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </button>

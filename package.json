@@ -14,7 +14,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@google/genai": "^1.13.0",
+    "@google/generative-ai": "^0.21.0",
     "docx": "^8.5.0",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",

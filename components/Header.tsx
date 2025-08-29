@@ -29,28 +29,39 @@ const Header: React.FC = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
-              Features
+            <a href="#builder" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
+              Resume Builder
             </a>
-            <a href="#templates" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
-              Templates
+            <a href="#ai-features" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
+              AI Features
             </a>
-            <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
-              Pricing
+            <a href="/privacy" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
+              Privacy
             </a>
-            <a href="#help" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
-              Help
+            <a href="/terms" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
+              Terms
             </a>
           </nav>
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="px-4 py-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
-              Sign In
-            </button>
-            <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              Get Started Free
-            </button>
+            <a 
+              href="https://www.paypal.me/iamaanahmad" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-4 py-2 text-red-600 hover:text-red-700 transition-colors duration-200 font-medium flex items-center space-x-1 border border-red-200 rounded-lg hover:bg-red-50"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+              </svg>
+              <span>Donate</span>
+            </a>
+            <a 
+              href="#builder" 
+              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              Start Building
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -74,25 +85,36 @@ const Header: React.FC = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-100 py-4">
             <nav className="flex flex-col space-y-4">
-              <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
-                Features
+              <a href="#builder" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
+                Resume Builder
               </a>
-              <a href="#templates" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
-                Templates
+              <a href="#ai-features" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
+                AI Features
               </a>
-              <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
-                Pricing
+              <a href="/privacy" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
+                Privacy
               </a>
-              <a href="#help" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
-                Help
+              <a href="/terms" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">
+                Terms
               </a>
-              <div className="pt-4 border-t border-gray-100">
-                <button className="w-full px-4 py-2 text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium mb-2">
-                  Sign In
-                </button>
-                <button className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium">
-                  Get Started Free
-                </button>
+              <div className="pt-4 border-t border-gray-100 space-y-2">
+                <a 
+                  href="https://www.paypal.me/iamaanahmad" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full px-4 py-2 text-red-600 hover:text-red-700 transition-colors duration-200 font-medium flex items-center justify-center space-x-1 border border-red-200 rounded-lg hover:bg-red-50"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                  </svg>
+                  <span>Donate</span>
+                </a>
+                <a 
+                  href="#builder" 
+                  className="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium text-center block"
+                >
+                  Start Building
+                </a>
               </div>
             </nav>
           </div>
