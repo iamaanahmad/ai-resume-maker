@@ -9,6 +9,7 @@ import PrintIcon from './components/icons/PrintIcon';
 import DownloadIcon from './components/icons/DownloadIcon';
 import ShareIcon from './components/icons/ShareIcon';
 import SparklesIcon from './components/icons/SparklesIcon';
+import ImageIcon from './components/icons/ImageIcon';
 import TargetIcon from './components/icons/TargetIcon';
 import DocumentTextIcon from './components/icons/DocumentTextIcon';
 import QuestionMarkCircleIcon from './components/icons/QuestionMarkCircleIcon';
@@ -264,6 +265,34 @@ const App: React.FC = () => {
         }
     };
 
+    const handleDownloadImage = () => {
+        const resumeElement = document.getElementById('resume-preview-container');
+        if (!resumeElement) {
+            showToast("Could not find resume content to download.");
+            return;
+        }
+
+        showToast('Generating image, please wait...');
+
+        html2canvas(resumeElement, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+        } as any).then((canvas: any) => {
+            const link = document.createElement('a');
+            link.download = `${resumeData.personalDetails.fullName.replace(/ /g, '_') || 'resume'}.png`;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Image downloaded successfully!');
+        }).catch((err: any) => {
+            logger.error("Error generating image:", err);
+            showToast("Could not generate image.");
+        });
+    };
+
     const handleDownloadJson = () => {
         try {
             const dataStr = JSON.stringify(resumeData, null, 2);
@@ -308,28 +337,34 @@ const App: React.FC = () => {
     };
     
     const handleShare = async () => {
-        const resumeText = formatResumeAsText(resumeData);
-        const shareTitle = `${resumeData.personalDetails.fullName}'s Resume`;
-        const shareText = `Check out my professional resume created with the free AI Resume Maker at freeresumebuilderai.hindustan.site!`;
+        const shareTitle = `${resumeData.personalDetails.fullName}'s Professional Resume`;
+        const shareText = `Check out my professional resume created with AI Resume Maker - a free, ATS-friendly resume builder!`;
+        const shareUrl = 'https://freeresumebuilderai.hindustan.site';
 
         try {
+            // Try native sharing first (works on mobile and some desktop browsers)
             if (navigator.share) {
                 await navigator.share({
                     title: shareTitle,
                     text: shareText,
-                    url: 'https://freeresumebuilderai.hindustan.site',
+                    url: shareUrl,
                 });
+                showToast('Shared successfully!');
             } else {
-                await navigator.clipboard.writeText(resumeText);
-                showToast('Resume content copied to clipboard!');
+                // Fallback: Copy share text to clipboard
+                const shareContent = `${shareTitle}\n\n${shareText}\n\n${shareUrl}`;
+                await navigator.clipboard.writeText(shareContent);
+                showToast('Share content copied to clipboard!');
             }
         } catch (error) {
             logger.error('Share failed:', error);
+            // Final fallback: Copy resume text
             try {
+                const resumeText = formatResumeAsText(resumeData);
                 await navigator.clipboard.writeText(resumeText);
-                showToast('Sharing failed. Resume content copied to clipboard instead!');
+                showToast('Resume content copied to clipboard instead!');
             } catch (copyError) {
-                showToast('Sharing and copying both failed.');
+                showToast('Sharing failed. Please try again.');
             }
         }
     };
@@ -488,48 +523,76 @@ const App: React.FC = () => {
 
                         {/* Right Column - Preview */}
                         <div className="space-y-6">
-                            {/* Export Buttons */}
+                            {/* Export & Share Options */}
                             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Export Your Resume</h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                                    <button
-                                        onClick={handleDownloadPdf}
-                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium text-sm"
-                                    >
-                                        <DownloadIcon className="w-4 h-4" />
-                                        PDF
-                                    </button>
-                                    <button
-                                        onClick={handleDownloadDocx}
-                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-sm"
-                                    >
-                                        <DownloadIcon className="w-4 h-4" />
-                                        DOCX
-                                    </button>
-                                    <button
-                                        onClick={handlePrint}
-                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium text-sm"
-                                    >
-                                        <PrintIcon className="w-4 h-4" />
-                                        Print
-                                    </button>
-                                    <button
-                                        onClick={handleDownloadJson}
-                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium text-sm"
-                                    >
-                                        <DownloadIcon className="w-4 h-4" />
-                                        Save
-                                    </button>
-                                    <button
-                                        onClick={handleLoadJson}
-                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium text-sm"
-                                    >
-                                        📁
-                                        Load
-                                    </button>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Export & Share</h3>
+                                
+                                {/* Export Options */}
+                                <div className="mb-4">
+                                    <h4 className="text-sm font-medium text-gray-700 mb-3">Download Resume</h4>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        <button
+                                            onClick={handleDownloadPdf}
+                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium text-xs"
+                                        >
+                                            <DownloadIcon className="w-3 h-3" />
+                                            PDF
+                                        </button>
+                                        <button
+                                            onClick={handleDownloadDocx}
+                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-xs"
+                                        >
+                                            <DownloadIcon className="w-3 h-3" />
+                                            DOCX
+                                        </button>
+                                        <button
+                                            onClick={handleDownloadImage}
+                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium text-xs"
+                                        >
+                                            <ImageIcon className="w-3 h-3" />
+                                            IMG
+                                        </button>
+                                        <button
+                                            onClick={handlePrint}
+                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium text-xs"
+                                        >
+                                            <PrintIcon className="w-3 h-3" />
+                                            Print
+                                        </button>
+                                    </div>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-3">
-                                    Export as PDF/DOCX for applications, print directly, or save/load your resume data.
+
+                                {/* Share & Data Options */}
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-700 mb-3">Share & Data</h4>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                        <button
+                                            onClick={handleShare}
+                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-medium text-xs"
+                                        >
+                                            <ShareIcon className="w-3 h-3" />
+                                            Share
+                                        </button>
+                                        <button
+                                            onClick={handleDownloadJson}
+                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium text-xs"
+                                        >
+                                            <DownloadIcon className="w-3 h-3" />
+                                            Save Data
+                                        </button>
+                                        <button
+                                            onClick={handleLoadJson}
+                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors duration-200 font-medium text-xs"
+                                        >
+                                            📁
+                                            Load Data
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <p className="text-xs text-gray-500 mt-4">
+                                    <strong>Download:</strong> PDF (applications), DOCX (editing), IMG (social media), Print (hard copy)<br/>
+                                    <strong>Share:</strong> Native sharing or copy to clipboard • <strong>Data:</strong> Save/load for later editing
                                 </p>
                             </div>
 

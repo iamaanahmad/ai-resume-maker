@@ -1,0 +1,84 @@
+/* Print-specific styles for resume pages only */
+@media print {
+  /* Hide everything except the resume preview */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Show only the resume preview container and its children */
+  #resume-preview,
+  #resume-preview *,
+  #resume-preview-container,
+  #resume-preview-container * {
+    visibility: visible;
+  }
+  
+  /* Position the resume preview for printing */
+  #resume-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  
+  #resume-preview-container {
+    padding: 20px !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+  
+  /* Ensure proper page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+  
+  /* Optimize text for printing */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* Remove any background colors that might not print well */
+  .bg-gradient-to-r,
+  .bg-gradient-to-l,
+  .bg-gradient-to-t,
+  .bg-gradient-to-b {
+    background: white !important;
+  }
+  
+  /* Ensure proper font sizes for printing */
+  body {
+    font-size: 12pt !important;
+    line-height: 1.4 !important;
+  }
+  
+  h1 { font-size: 18pt !important; }
+  h2 { font-size: 16pt !important; }
+  h3 { font-size: 14pt !important; }
+  
+  /* Remove shadows and effects for cleaner printing */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  /* Ensure links are visible in print */
+  a {
+    text-decoration: underline !important;
+    color: #000 !important;
+  }
+  
+  /* Page margins */
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+}
