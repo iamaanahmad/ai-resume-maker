@@ -337,9 +337,9 @@ const App: React.FC = () => {
     };
     
     const handleShare = async () => {
-        const shareTitle = `${resumeData.personalDetails.fullName}'s Professional Resume`;
-        const shareText = `Check out my professional resume created with AI Resume Maker - a free, ATS-friendly resume builder!`;
-        const shareUrl = 'https://freeresumebuilderai.hindustan.site';
+        const shareTitle = 'Free AI Resume Builder - Create Professional Resumes';
+        const shareText = `Create ATS-friendly resumes with AI assistance! Free resume builder with smart optimization and export options.`;
+        const shareUrl = window.location.href;
 
         try {
             // Try native sharing first (works on mobile and some desktop browsers)
@@ -349,23 +349,17 @@ const App: React.FC = () => {
                     text: shareText,
                     url: shareUrl,
                 });
-                showToast('Shared successfully!');
+                showToast('✅ Shared successfully!');
             } else {
                 // Fallback: Copy share text to clipboard
-                const shareContent = `${shareTitle}\n\n${shareText}\n\n${shareUrl}`;
+                const shareContent = `${shareTitle}\n\n${shareText}\n\n🔗 ${shareUrl}`;
                 await navigator.clipboard.writeText(shareContent);
-                showToast('Share content copied to clipboard!');
+                showToast('📋 Share content copied to clipboard!');
             }
         } catch (error) {
             logger.error('Share failed:', error);
-            // Final fallback: Copy resume text
-            try {
-                const resumeText = formatResumeAsText(resumeData);
-                await navigator.clipboard.writeText(resumeText);
-                showToast('Resume content copied to clipboard instead!');
-            } catch (copyError) {
-                showToast('Sharing failed. Please try again.');
-            }
+            // Final fallback: Show manual share message
+            showToast('❌ Unable to share automatically. Please copy the URL manually.');
         }
     };
 
@@ -523,40 +517,45 @@ const App: React.FC = () => {
 
                         {/* Right Column - Preview */}
                         <div className="space-y-6">
-                            {/* Export & Share Options */}
+                            <ResumePreview
+                                resumeData={resumeData}
+                                isDarkMode={isDarkMode}
+                            />
+                            
+                            {/* Export & Share Options - Moved below Resume Preview */}
                             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Export & Share</h3>
+                                <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">📥 Export & Share Your Resume</h3>
                                 
                                 {/* Export Options */}
-                                <div className="mb-4">
-                                    <h4 className="text-sm font-medium text-gray-700 mb-3">Download Resume</h4>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <div className="mb-6">
+                                    <h4 className="text-lg font-semibold text-gray-800 mb-4">📄 Download Resume</h4>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                         <button
                                             onClick={handleDownloadPdf}
-                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium text-xs"
+                                            className="flex items-center justify-center gap-2 px-4 py-4 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                         >
-                                            <DownloadIcon className="w-3 h-3" />
+                                            <DownloadIcon className="w-5 h-5" />
                                             PDF
                                         </button>
                                         <button
                                             onClick={handleDownloadDocx}
-                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-xs"
+                                            className="flex items-center justify-center gap-2 px-4 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                         >
-                                            <DownloadIcon className="w-3 h-3" />
+                                            <DownloadIcon className="w-5 h-5" />
                                             DOCX
                                         </button>
                                         <button
                                             onClick={handleDownloadImage}
-                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium text-xs"
+                                            className="flex items-center justify-center gap-2 px-4 py-4 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                         >
-                                            <ImageIcon className="w-3 h-3" />
+                                            <ImageIcon className="w-5 h-5" />
                                             IMG
                                         </button>
                                         <button
                                             onClick={handlePrint}
-                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium text-xs"
+                                            className="flex items-center justify-center gap-2 px-4 py-4 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                         >
-                                            <PrintIcon className="w-3 h-3" />
+                                            <PrintIcon className="w-5 h-5" />
                                             Print
                                         </button>
                                     </div>
@@ -564,42 +563,40 @@ const App: React.FC = () => {
 
                                 {/* Share & Data Options */}
                                 <div>
-                                    <h4 className="text-sm font-medium text-gray-700 mb-3">Share & Data</h4>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <h4 className="text-lg font-semibold text-gray-800 mb-4">🔗 Share & Data Management</h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                         <button
                                             onClick={handleShare}
-                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-medium text-xs"
+                                            className="flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                         >
-                                            <ShareIcon className="w-3 h-3" />
-                                            Share
+                                            <ShareIcon className="w-5 h-5" />
+                                            Share Resume
                                         </button>
                                         <button
                                             onClick={handleDownloadJson}
-                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium text-xs"
+                                            className="flex items-center justify-center gap-2 px-6 py-4 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                         >
-                                            <DownloadIcon className="w-3 h-3" />
+                                            <DownloadIcon className="w-5 h-5" />
                                             Save Data
                                         </button>
                                         <button
                                             onClick={handleLoadJson}
-                                            className="flex items-center justify-center gap-1 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors duration-200 font-medium text-xs"
+                                            className="flex items-center justify-center gap-2 px-6 py-4 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                                         >
-                                            📁
+                                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                            </svg>
                                             Load Data
                                         </button>
                                     </div>
                                 </div>
 
-                                <p className="text-xs text-gray-500 mt-4">
-                                    <strong>Download:</strong> PDF (applications), DOCX (editing), IMG (social media), Print (hard copy)<br/>
-                                    <strong>Share:</strong> Native sharing or copy to clipboard • <strong>Data:</strong> Save/load for later editing
-                                </p>
+                                <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
+                                    <p className="text-sm text-gray-700 text-center">
+                                        <strong>💡 Quick Tips:</strong> Use PDF for job applications, DOCX for editing, IMG for social media, and Print for hard copies. Save your data to continue editing later!
+                                    </p>
+                                </div>
                             </div>
-
-                            <ResumePreview
-                                resumeData={resumeData}
-                                isDarkMode={isDarkMode}
-                            />
                         </div>
                     </div>
                 </div>
