@@ -10,27 +10,61 @@ body {
 }
 
 @media print {
+  /* Hide everything except the resume */
   body * {
     visibility: hidden;
   }
-  #resume-preview-container, #resume-preview-container * {
+  
+  /* Show only the resume preview */
+  #resume-preview, #resume-preview * {
     visibility: visible;
   }
-  #resume-preview-container {
+  
+  /* Position resume for printing */
+  #resume-preview {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     height: auto;
-    margin: 0;
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    transform: scale(1) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: white !important;
   }
+  
+  #resume-preview-container {
+    padding: 20mm !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  /* Ensure proper page breaks */
+  section {
+    page-break-inside: avoid;
+  }
+  
+  article {
+    page-break-inside: avoid;
+  }
+  
+  /* Page settings */
   @page {
     size: A4;
-    margin: 20mm;
+    margin: 0;
+  }
+  
+  /* Remove any background colors for print */
+  * {
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Keep borders visible */
+  .border, .border-b, .border-t, .border-gray-200, .border-gray-300 {
+    border-color: #000 !important;
   }
 }
 

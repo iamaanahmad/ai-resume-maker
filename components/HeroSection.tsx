@@ -5,17 +5,17 @@ import DocumentTextIcon from './icons/DocumentTextIcon';
 
 const HeroSection: React.FC = () => {
   return (
-    <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden">
+    <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden" aria-label="Hero section">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div className="absolute inset-0 bg-grid-pattern opacity-5" aria-hidden="true"></div>
       
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-32">
         <div className="text-center">
           {/* Badge */}
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-8">
-            <SparklesIcon className="w-4 h-4 mr-2" />
-            AI-Powered Resume Builder
-            <span className="ml-2 px-2 py-1 bg-blue-200 rounded-full text-xs">Free Forever</span>
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-6 md:mb-8">
+            <SparklesIcon className="w-4 h-4 mr-2" aria-hidden="true" />
+            <span>AI-Powered Resume Builder</span>
+            <span className="ml-2 px-2 py-1 bg-blue-200 rounded-full text-xs" role="status">Free Forever</span>
           </div>
 
           {/* Main Heading */}
@@ -34,48 +34,45 @@ const HeroSection: React.FC = () => {
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-            <a href="#builder" className="px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 inline-flex items-center">
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mb-12 md:mb-16">
+            <a 
+              href="#builder" 
+              className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base md:text-lg font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 inline-flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-blue-300"
+            >
               Start Building Free
-              <SparklesIcon className="w-5 h-5 ml-2" />
+              <SparklesIcon className="w-5 h-5 ml-2" aria-hidden="true" />
             </a>
-            <button className="px-10 py-5 border-2 border-gray-300 text-gray-700 text-lg font-semibold rounded-2xl hover:border-blue-600 hover:text-blue-600 transition-all duration-200 bg-white hover:shadow-lg transform hover:-translate-y-1 inline-flex items-center">
-              Watch Demo
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
           </div>
 
           {/* Trust Indicators */}
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm text-gray-500 mb-12">
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              No credit card required
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-3 sm:space-y-0 sm:space-x-6 md:space-x-8 text-sm text-gray-500 mb-12" role="list">
+            <div className="flex items-center" role="listitem">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2" aria-hidden="true"></div>
+              <span>No credit card required</span>
             </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              Export to PDF & Word
+            <div className="flex items-center" role="listitem">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2" aria-hidden="true"></div>
+              <span>Export to PDF & Word</span>
             </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              ATS-optimized templates
+            <div className="flex items-center" role="listitem">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2" aria-hidden="true"></div>
+              <span>ATS-optimized templates</span>
             </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">50K+</div>
-              <div className="text-gray-600">Resumes Created</div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
+            <div className="text-center p-4">
+              <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2" aria-label="50,000 plus resumes created">50K+</div>
+              <div className="text-gray-600 text-sm md:text-base">Resumes Created</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-2">95%</div>
-              <div className="text-gray-600">ATS Success Rate</div>
+            <div className="text-center p-4">
+              <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-2" aria-label="95 percent ATS success rate">95%</div>
+              <div className="text-gray-600 text-sm md:text-base">ATS Success Rate</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2">4.9/5</div>
-              <div className="text-gray-600">User Rating</div>
+            <div className="text-center p-4">
+              <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2" aria-label="4.9 out of 5 user rating">4.9/5</div>
+              <div className="text-gray-600 text-sm md:text-base">User Rating</div>
             </div>
           </div>
         </div>

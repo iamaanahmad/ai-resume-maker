@@ -5,9 +5,9 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gray-900 text-white" role="contentinfo">
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Section */}
           <div className="md:col-span-1">
@@ -29,16 +29,17 @@ const Footer: React.FC = () => {
 
           {/* Useful Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-white">Contribute</h4>
-            <ul className="space-y-3">
+            <h3 className="text-lg font-semibold mb-4 text-white">Contribute</h3>
+            <ul className="space-y-3" role="list">
               <li>
                 <a 
                   href="https://github.com/iamaanahmad/ai-resume-maker" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2"
+                  className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-1 py-1"
+                  aria-label="View source code on GitHub"
                 >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                     <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
                   </svg>
                   <span>View Source Code</span>
@@ -88,8 +89,8 @@ const Footer: React.FC = () => {
 
           {/* Support & Connect */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-white">Support & Connect</h4>
-            <ul className="space-y-3">
+            <h3 className="text-lg font-semibold mb-4 text-white">Support & Connect</h3>
+            <ul className="space-y-3" role="list">
               <li>
                 <a 
                   href="https://www.linkedin.com/in/iamaanshaikh/" 
@@ -117,12 +118,7 @@ const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
-                <a href="#ai-features" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
-                  AI Features
-                </a>
-              </li>
-              <li>
-                <a href="#builder" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
+                <a href="#builder" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1">
                   Resume Builder
                 </a>
               </li>
@@ -135,17 +131,23 @@ const Footer: React.FC = () => {
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
+            <div className="flex flex-col sm:flex-row items-center sm:space-x-6 space-y-2 sm:space-y-0 text-sm text-gray-400">
               <span>&copy; {currentYear} AI Resume Maker. All rights reserved.</span>
-              <a href="/privacy" className="hover:text-white transition-colors duration-200">
+              <a 
+                href="/privacy" 
+                className="hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1"
+              >
                 Privacy Policy
               </a>
-              <a href="/terms" className="hover:text-white transition-colors duration-200">
+              <a 
+                href="/terms" 
+                className="hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 rounded px-2 py-1"
+              >
                 Terms of Service
               </a>
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-400">
-              <span>Made with ❤️ for job seekers worldwide</span>
+              <span role="img" aria-label="Made with love">Made with ❤️ for job seekers worldwide</span>
             </div>
           </div>
         </div>

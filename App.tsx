@@ -5,24 +5,19 @@ import ResumePreview from './components/ResumePreview';
 import { refineWithAI, parseAndRefineWithAI, analyzeResumeAgainstJob, generateCoverLetter, generateInterviewQuestions, generateResumeScorecard } from './services/geminiService';
 import { ResumeData, WorkExperience, Education, AiRefineType, ResumeAnalysis, InterviewQuestion, ToneStyle, ResumeScorecard } from './types';
 import { exportToDocx } from './utils/docxExport';
+import { captureElementAsCanvas, exportCanvasToPDF, exportCanvasToImage } from './utils/exportHelpers';
 import PrintIcon from './components/icons/PrintIcon';
 import DownloadIcon from './components/icons/DownloadIcon';
 import ShareIcon from './components/icons/ShareIcon';
 import SparklesIcon from './components/icons/SparklesIcon';
 import ImageIcon from './components/icons/ImageIcon';
-import TargetIcon from './components/icons/TargetIcon';
-import DocumentTextIcon from './components/icons/DocumentTextIcon';
-import QuestionMarkCircleIcon from './components/icons/QuestionMarkCircleIcon';
 import Modal from './components/Modal';
-import SettingsPanel from './components/SettingsPanel';
 import VoiceInput from './components/VoiceInput';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HeroSection from './components/HeroSection';
 import DonateSection from './components/DonateSection';
 import Router from './components/Router';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { logger } from './utils/logger';
 
 const initialResumeData: ResumeData = {
@@ -221,9 +216,7 @@ const App: React.FC = () => {
 
     const handlePrint = () => { window.print(); };
 
-    const handleDownloadPdf = () => {
-        // PDF libraries are now bundled with the application
-        
+    const handleDownloadPdf = async () => {
         const resumeElement = document.getElementById('resume-preview-container');
         if (!resumeElement) {
             showToast("Could not find resume content to download.");
@@ -232,26 +225,15 @@ const App: React.FC = () => {
 
         showToast('Generating PDF, please wait...');
 
-        html2canvas(resumeElement, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-        } as any).then((canvas: any) => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-            const ratio = canvasWidth / canvasHeight;
-            const imgHeight = pdfWidth / ratio;
-
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
-            pdf.save(`${resumeData.personalDetails.fullName.replace(/ /g, '_') || 'resume'}.pdf`);
-        }).catch((err: any) => {
+        try {
+            const canvas = await captureElementAsCanvas(resumeElement);
+            const fileName = `${resumeData.personalDetails.fullName.replace(/ /g, '_') || 'resume'}.pdf`;
+            exportCanvasToPDF(canvas, fileName);
+            showToast('PDF downloaded successfully!');
+        } catch (err) {
             logger.error("Error generating PDF:", err);
-            showToast("Could not generate PDF.");
-        });
+            showToast("Could not generate PDF. Please try again.");
+        }
     };
 
     const handleDownloadDocx = async () => {
@@ -265,7 +247,7 @@ const App: React.FC = () => {
         }
     };
 
-    const handleDownloadImage = () => {
+    const handleDownloadImage = async () => {
         const resumeElement = document.getElementById('resume-preview-container');
         if (!resumeElement) {
             showToast("Could not find resume content to download.");
@@ -274,23 +256,15 @@ const App: React.FC = () => {
 
         showToast('Generating image, please wait...');
 
-        html2canvas(resumeElement, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff',
-        } as any).then((canvas: any) => {
-            const link = document.createElement('a');
-            link.download = `${resumeData.personalDetails.fullName.replace(/ /g, '_') || 'resume'}.png`;
-            link.href = canvas.toDataURL('image/png');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        try {
+            const canvas = await captureElementAsCanvas(resumeElement);
+            const fileName = `${resumeData.personalDetails.fullName.replace(/ /g, '_') || 'resume'}.png`;
+            exportCanvasToImage(canvas, fileName);
             showToast('Image downloaded successfully!');
-        }).catch((err: any) => {
+        } catch (err) {
             logger.error("Error generating image:", err);
-            showToast("Could not generate image.");
-        });
+            showToast("Could not generate image. Please try again.");
+        }
     };
 
     const handleDownloadJson = () => {
@@ -472,18 +446,25 @@ const App: React.FC = () => {
             )}
 
             {/* Main Resume Builder Section */}
-            <section id="builder" className="py-20 bg-white">
+            <section id="builder" className="py-16 md:py-20 lg:py-24 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Build Your Resume</h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                    <div className="text-center mb-12 md:mb-16">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full bg-green-100 text-green-800 text-sm font-medium mb-6">
+                            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                            </svg>
+                            <span>Resume Builder</span>
+                        </div>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Build Your Resume</h2>
+                        <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
                             Create a professional, ATS-friendly resume with our intelligent AI assistant. 
                             Fill out the form on the left and see your resume come to life on the right.
                         </p>
                     </div>
 
                     {/* Resume Builder Interface */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
                         {/* Left Column - Form */}
                         <div className="space-y-6">
                             <ResumeForm
@@ -516,225 +497,157 @@ const App: React.FC = () => {
                         </div>
 
                         {/* Right Column - Preview */}
-                        <div className="space-y-6">
+                        <div className="lg:sticky lg:top-24 lg:self-start">
                             <ResumePreview
                                 resumeData={resumeData}
                                 isDarkMode={isDarkMode}
                             />
-                            
-                            {/* Export & Share Options - Moved below Resume Preview */}
-                            <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-                                <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">📥 Export & Share Your Resume</h3>
-                                
-                                {/* Export Options */}
-                                <div className="mb-6">
-                                    <h4 className="text-lg font-semibold text-gray-800 mb-4">📄 Download Resume</h4>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                        <button
-                                            onClick={handleDownloadPdf}
-                                            className="flex items-center justify-center gap-2 px-4 py-4 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                                        >
-                                            <DownloadIcon className="w-5 h-5" />
-                                            PDF
-                                        </button>
-                                        <button
-                                            onClick={handleDownloadDocx}
-                                            className="flex items-center justify-center gap-2 px-4 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                                        >
-                                            <DownloadIcon className="w-5 h-5" />
-                                            DOCX
-                                        </button>
-                                        <button
-                                            onClick={handleDownloadImage}
-                                            className="flex items-center justify-center gap-2 px-4 py-4 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                                        >
-                                            <ImageIcon className="w-5 h-5" />
-                                            IMG
-                                        </button>
-                                        <button
-                                            onClick={handlePrint}
-                                            className="flex items-center justify-center gap-2 px-4 py-4 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                                        >
-                                            <PrintIcon className="w-5 h-5" />
-                                            Print
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Share & Data Options */}
-                                <div>
-                                    <h4 className="text-lg font-semibold text-gray-800 mb-4">🔗 Share & Data Management</h4>
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                        <button
-                                            onClick={handleShare}
-                                            className="flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                                        >
-                                            <ShareIcon className="w-5 h-5" />
-                                            Share Resume
-                                        </button>
-                                        <button
-                                            onClick={handleDownloadJson}
-                                            className="flex items-center justify-center gap-2 px-6 py-4 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                                        >
-                                            <DownloadIcon className="w-5 h-5" />
-                                            Save Data
-                                        </button>
-                                        <button
-                                            onClick={handleLoadJson}
-                                            className="flex items-center justify-center gap-2 px-6 py-4 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-all duration-200 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                                        >
-                                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                            </svg>
-                                            Load Data
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
-                                    <p className="text-sm text-gray-700 text-center">
-                                        <strong>💡 Quick Tips:</strong> Use PDF for job applications, DOCX for editing, IMG for social media, and Print for hard copies. Save your data to continue editing later!
-                                    </p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* AI Power-Ups Section */}
-            <section id="ai-features" className="py-20 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Export & Share Section - Dedicated Section */}
+            <section className="py-16 md:py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">AI Power-Ups</h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Supercharge your resume with intelligent AI tools that give you the competitive edge
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-6 shadow-xl">
+                            <DownloadIcon className="w-8 h-8 text-white" />
+                        </div>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Export & Share Your Resume</h2>
+                        <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                            Download your resume in multiple formats or share it with potential employers
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {/* AI Quick Fill */}
-                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <SparklesIcon className="w-8 h-8 text-blue-600" />
-                                </div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Quick Fill</h3>
-                                <p className="text-gray-600 mb-4">Paste your resume and let AI organize it perfectly</p>
-                                <textarea
-                                    value={rawResumeText}
-                                    onChange={(e) => setRawResumeText(e.target.value)}
-                                    placeholder="Paste your resume text here..."
-                                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    rows={4}
-                                />
+                    <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border-2 border-white/50">
+                        {/* Download Options */}
+                        <div className="mb-12">
+                            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 flex items-center justify-center">
+                                <span className="mr-3 text-3xl md:text-4xl">📥</span>
+                                Download Resume
+                            </h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                                 <button
-                                    onClick={handleAutoFillAI}
-                                    disabled={isAutoFilling}
-                                    className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 transition-all duration-200 font-medium"
+                                    onClick={handleDownloadPdf}
+                                    className="group flex flex-col items-center justify-center gap-3 p-6 md:p-8 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-2xl hover:from-red-600 hover:to-red-700 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-2 min-h-[160px] md:min-h-[180px]"
+                                    style={{ backgroundColor: '#ef4444' }}
                                 >
-                                    {isAutoFilling ? 'Processing...' : 'Auto-Fill with AI'}
+                                    <DownloadIcon className="w-10 h-10 md:w-12 md:h-12 text-white group-hover:scale-110 transition-transform" />
+                                    <span className="text-lg md:text-xl font-bold text-white">PDF</span>
+                                    <span className="text-xs md:text-sm text-white">Best for applications</span>
+                                </button>
+                                <button
+                                    onClick={handleDownloadDocx}
+                                    className="group flex flex-col items-center justify-center gap-3 p-6 md:p-8 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-2 min-h-[160px] md:min-h-[180px]"
+                                    style={{ backgroundColor: '#3b82f6' }}
+                                >
+                                    <DownloadIcon className="w-10 h-10 md:w-12 md:h-12 text-white group-hover:scale-110 transition-transform" />
+                                    <span className="text-lg md:text-xl font-bold text-white">DOCX</span>
+                                    <span className="text-xs md:text-sm text-white">Editable format</span>
+                                </button>
+                                <button
+                                    onClick={handleDownloadImage}
+                                    className="group flex flex-col items-center justify-center gap-3 p-6 md:p-8 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-2xl hover:from-green-600 hover:to-green-700 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-2 min-h-[160px] md:min-h-[180px]"
+                                    style={{ backgroundColor: '#22c55e' }}
+                                >
+                                    <ImageIcon className="w-10 h-10 md:w-12 md:h-12 text-white group-hover:scale-110 transition-transform" />
+                                    <span className="text-lg md:text-xl font-bold text-white">Image</span>
+                                    <span className="text-xs md:text-sm text-white">For social media</span>
+                                </button>
+                                <button
+                                    onClick={handlePrint}
+                                    className="group flex flex-col items-center justify-center gap-3 p-6 md:p-8 bg-gradient-to-br from-slate-700 to-slate-800 text-white rounded-2xl hover:from-slate-800 hover:to-slate-900 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-2 min-h-[160px] md:min-h-[180px]"
+                                    style={{ backgroundColor: '#475569' }}
+                                >
+                                    <PrintIcon className="w-10 h-10 md:w-12 md:h-12 text-white group-hover:scale-110 transition-transform" />
+                                    <span className="text-lg md:text-xl font-bold text-white">Print</span>
+                                    <span className="text-xs md:text-sm text-white">Physical copy</span>
                                 </button>
                             </div>
                         </div>
 
-                        {/* Job Match Analysis */}
-                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <TargetIcon className="w-8 h-8 text-green-600" />
-                                </div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Job Match Analysis</h3>
-                                <p className="text-gray-600 mb-4">See how well your resume matches a job description</p>
-                                <textarea
-                                    value={jobDescription}
-                                    onChange={(e) => setJobDescription(e.target.value)}
-                                    placeholder="Paste job description here..."
-                                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    rows={4}
-                                />
-                                <button
-                                    onClick={() => runAiTool('analyze')}
-                                    disabled={isGenerating}
-                                    className="w-full px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 disabled:opacity-50 transition-all duration-200 font-medium"
-                                >
-                                    {isGenerating ? 'Analyzing...' : 'Analyze Match'}
-                                </button>
+                        {/* Divider */}
+                        <div className="relative my-12">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t-2 border-gray-300"></div>
+                            </div>
+                            <div className="relative flex justify-center">
+                                <span className="bg-white px-8 py-2 text-gray-600 font-bold text-lg rounded-full border-2 border-gray-300">OR</span>
                             </div>
                         </div>
 
-                        {/* Cover Letter Generator */}
-                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <DocumentTextIcon className="w-8 h-8 text-purple-600" />
-                                </div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Cover Letter</h3>
-                                <p className="text-gray-600 mb-4">Generate a compelling, personalized cover letter</p>
+                        {/* Share & Data Management */}
+                        <div className="mb-12">
+                            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 flex items-center justify-center">
+                                <span className="mr-3 text-3xl md:text-4xl">🔗</span>
+                                Share & Manage Data
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                                 <button
-                                    onClick={() => runAiTool('coverLetter')}
-                                    disabled={isGenerating || !jobDescription.trim()}
-                                    className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 transition-all duration-200 font-medium"
+                                    onClick={handleShare}
+                                    className="group flex flex-col items-center justify-center gap-3 p-6 md:p-8 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-2xl hover:from-indigo-600 hover:to-indigo-700 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-2 min-h-[160px] md:min-h-[180px]"
+                                    style={{ backgroundColor: '#6366f1' }}
                                 >
-                                    {isGenerating ? 'Generating...' : 'Generate Cover Letter'}
+                                    <ShareIcon className="w-10 h-10 md:w-12 md:h-12 text-white group-hover:scale-110 transition-transform" />
+                                    <span className="text-lg md:text-xl font-bold text-white">Share Resume</span>
+                                    <span className="text-xs md:text-sm text-white">Send to others</span>
                                 </button>
-                            </div>
-                        </div>
-
-                        {/* Interview Prep */}
-                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <QuestionMarkCircleIcon className="w-8 h-8 text-orange-600" />
-                                </div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Interview Prep</h3>
-                                <p className="text-gray-600 mb-4">Get likely interview questions for your role</p>
                                 <button
-                                    onClick={() => runAiTool('interviewPrep')}
-                                    disabled={isGenerating || !jobDescription.trim()}
-                                    className="w-full px-4 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 transition-all duration-200 font-medium"
+                                    onClick={handleDownloadJson}
+                                    className="group flex flex-col items-center justify-center gap-3 p-6 md:p-8 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-2 min-h-[160px] md:min-h-[180px]"
+                                    style={{ backgroundColor: '#a855f7' }}
                                 >
-                                    {isGenerating ? 'Preparing...' : 'Get Questions'}
+                                    <DownloadIcon className="w-10 h-10 md:w-12 md:h-12 text-white group-hover:scale-110 transition-transform" />
+                                    <span className="text-lg md:text-xl font-bold text-white">Save Data</span>
+                                    <span className="text-xs md:text-sm text-white">Backup your work</span>
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Second Row - Resume Scorecard */}
-                    <div className="mt-8 flex justify-center">
-                        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 max-w-md w-full">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                <button
+                                    onClick={handleLoadJson}
+                                    className="group flex flex-col items-center justify-center gap-3 p-6 md:p-8 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:-translate-y-2 min-h-[160px] md:min-h-[180px]"
+                                    style={{ backgroundColor: '#f97316' }}
+                                >
+                                    <svg className="w-10 h-10 md:w-12 md:h-12 text-white group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
                                     </svg>
-                                </div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Resume Scorecard</h3>
-                                <p className="text-gray-600 mb-4">Get an AI-powered evaluation of your resume with improvement suggestions</p>
-                                <button
-                                    onClick={() => runAiTool('scorecard')}
-                                    disabled={isGenerating}
-                                    className="w-full px-4 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 disabled:opacity-50 transition-all duration-200 font-medium"
-                                >
-                                    {isGenerating ? 'Analyzing...' : 'Get Scorecard'}
+                                    <span className="text-lg md:text-xl font-bold text-white">Load Data</span>
+                                    <span className="text-xs md:text-sm text-white">Continue editing</span>
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* Settings Panel */}
-            <section className="py-16 bg-white">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <SettingsPanel
-                        toneStyle={toneStyle}
-                        onToneStyleChange={setToneStyle}
-                        isDarkMode={isDarkMode}
-                        onDarkModeToggle={() => setIsDarkMode(!isDarkMode)}
-                        isBeginnerMode={isBeginnerMode}
-                        onBeginnerModeToggle={() => setIsBeginnerMode(!isBeginnerMode)}
-                    />
+                        {/* Tips Section */}
+                        <div className="p-6 md:p-8 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 rounded-2xl border-2 border-blue-300 shadow-lg">
+                            <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
+                                <div className="flex-shrink-0">
+                                    <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                        <span className="text-3xl md:text-4xl">💡</span>
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Quick Tips</h4>
+                                    <ul className="space-y-3 text-sm md:text-base text-gray-800">
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-red-600">●</span>
+                                            <span><strong>PDF:</strong> Best for job applications and ATS systems</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-blue-600">●</span>
+                                            <span><strong>DOCX:</strong> Perfect for further editing in Microsoft Word</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-green-600">●</span>
+                                            <span><strong>Image:</strong> Great for sharing on LinkedIn or social media</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className="text-purple-600">●</span>
+                                            <span><strong>Save Data:</strong> Keep your progress and continue editing later</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 

@@ -174,7 +174,7 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
 
     if (!isSupported) {
         return (
-            <div className="text-xs text-gray-500 italic p-2 bg-gray-100 rounded-lg">
+            <div className="text-xs text-gray-500 italic p-2 bg-gray-100 rounded-lg" role="alert">
                 Voice input not supported in this browser
             </div>
         );
@@ -199,12 +199,14 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
     };
 
     return (
-        <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
+        <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200" role="region" aria-label="Voice input controls">
             <button
                 type="button"
                 onClick={toggleListening}
-                className={`p-2 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg text-white ${getButtonColor()}`}
+                className={`p-2 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${getButtonColor()}`}
                 title={isListening ? (isPaused ? 'Resume listening' : 'Pause listening') : 'Start voice input'}
+                aria-label={isListening ? (isPaused ? 'Resume voice input' : 'Pause voice input') : 'Start voice input'}
+                aria-pressed={isListening}
             >
                 {!isListening ? (
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -225,20 +227,21 @@ const VoiceInput: React.FC<VoiceInputProps> = ({
                 <button
                     type="button"
                     onClick={handleStop}
-                    className="p-2 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg text-white bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600"
+                    className="p-2 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg text-white bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                     title="Stop listening"
+                    aria-label="Stop voice input"
                 >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clipRule="evenodd" />
                     </svg>
                 </button>
             )}
             
             <div className="flex-1 min-w-0">
-                <span className={`text-sm font-medium ${isListening ? (isPaused ? 'text-yellow-600' : 'text-green-600') : 'text-blue-600'}`}>
+                <span className={`text-sm font-medium ${isListening ? (isPaused ? 'text-yellow-600' : 'text-green-600') : 'text-blue-600'}`} role="status" aria-live="polite">
                     {getStatusText()}
                 </span>
-                <p className="text-xs text-gray-500 mt-1 truncate">
+                <p className="text-xs text-gray-500 mt-1 truncate" aria-live="polite">
                     {getStatusDescription()}
                 </p>
             </div>

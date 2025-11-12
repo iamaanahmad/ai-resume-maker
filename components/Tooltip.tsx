@@ -28,13 +28,15 @@ const Tooltip: React.FC<TooltipProps> = ({ content, children, position = 'top' }
             className="relative inline-block"
             onMouseEnter={() => setIsVisible(true)}
             onMouseLeave={() => setIsVisible(false)}
+            onFocus={() => setIsVisible(true)}
+            onBlur={() => setIsVisible(false)}
         >
             {children}
             {isVisible && (
-                <div className={`absolute z-50 ${positionClasses[position]}`}>
-                    <div className="bg-gray-800 text-white text-xs rounded py-2 px-3 max-w-xs whitespace-normal">
+                <div className={`absolute z-50 ${positionClasses[position]}`} role="tooltip" aria-live="polite">
+                    <div className="bg-gray-800 text-white text-xs rounded py-2 px-3 max-w-xs whitespace-normal shadow-lg">
                         {content}
-                        <div className={`absolute w-0 h-0 border-4 ${arrowClasses[position]}`}></div>
+                        <div className={`absolute w-0 h-0 border-4 ${arrowClasses[position]}`} aria-hidden="true"></div>
                     </div>
                 </div>
             )}

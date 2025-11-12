@@ -38,13 +38,13 @@ interface ResumeFormProps {
 }
 
 const Section: React.FC<{ title: string; children: React.ReactNode; isDarkMode?: boolean }> = ({ title, children, isDarkMode }) => (
-    <div className="mb-10">
+    <section className="mb-10 md:mb-12">
         <div className="flex items-center gap-3 mb-6">
-            <div className={`h-8 w-1 rounded-full ${isDarkMode ? 'bg-gradient-to-b from-blue-400 to-purple-400' : 'bg-gradient-to-b from-blue-500 to-purple-500'}`}></div>
-            <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'} tracking-tight`}>{title}</h2>
+            <div className={`h-8 w-1 rounded-full ${isDarkMode ? 'bg-gradient-to-b from-blue-400 to-purple-400' : 'bg-gradient-to-b from-blue-500 to-purple-500'}`} aria-hidden="true"></div>
+            <h2 className={`text-xl md:text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'} tracking-tight`}>{title}</h2>
         </div>
         {children}
-    </div>
+    </section>
 );
 
 const InputField: React.FC<{ 
@@ -57,26 +57,31 @@ const InputField: React.FC<{
     tooltip?: string;
     example?: string;
     isBeginnerMode?: boolean;
-}> = ({ label, value, onChange, placeholder, type = "text", name, tooltip, example, isBeginnerMode }) => (
-    <div className="mb-4">
-        <div className="flex items-center gap-2 mb-1">
-            <label className="block text-sm font-medium text-gray-700">{label}</label>
-            {isBeginnerMode && tooltip && (
-                <Tooltip content={tooltip}>
-                    <span className="text-blue-500 cursor-help">ℹ️</span>
-                </Tooltip>
-            )}
+}> = ({ label, value, onChange, placeholder, type = "text", name, tooltip, example, isBeginnerMode }) => {
+    const inputId = `input-${name || label.toLowerCase().replace(/\s+/g, '-')}`;
+    return (
+        <div className="mb-5">
+            <div className="flex items-center gap-2 mb-2">
+                <label htmlFor={inputId} className="block text-sm font-medium text-gray-700">{label}</label>
+                {isBeginnerMode && tooltip && (
+                    <Tooltip content={tooltip}>
+                        <span className="text-blue-500 cursor-help" role="img" aria-label="Information">ℹ️</span>
+                    </Tooltip>
+                )}
+            </div>
+            <input 
+                id={inputId}
+                type={type} 
+                name={name} 
+                value={value} 
+                onChange={onChange} 
+                placeholder={isBeginnerMode && example ? example : placeholder} 
+                className="w-full p-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-300 bg-white text-gray-900 placeholder-gray-400 hover:shadow-md" 
+                aria-label={label}
+            />
         </div>
-        <input 
-            type={type} 
-            name={name} 
-            value={value} 
-            onChange={onChange} 
-            placeholder={isBeginnerMode && example ? example : placeholder} 
-            className="w-full p-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white text-gray-900 placeholder-gray-400 hover:shadow-md" 
-        />
-    </div>
-);
+    );
+};
 
 const TextAreaField: React.FC<{ 
     label: string; 
@@ -106,49 +111,56 @@ const TextAreaField: React.FC<{
     onVoiceInput,
     isListening = false,
     onListeningChange
-}) => (
-    <div className="mb-4">
-        <div className="flex justify-between items-center mb-1">
-            <div className="flex items-center gap-2">
-                <label className="block text-sm font-medium text-gray-700">{label}</label>
-                {isBeginnerMode && tooltip && (
-                    <Tooltip content={tooltip}>
-                        <span className="text-blue-500 cursor-help">ℹ️</span>
-                    </Tooltip>
-                )}
+}) => {
+    const textareaId = `textarea-${label.toLowerCase().replace(/\s+/g, '-')}`;
+    return (
+        <div className="mb-5">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-2">
+                <div className="flex items-center gap-2">
+                    <label htmlFor={textareaId} className="block text-sm font-medium text-gray-700">{label}</label>
+                    {isBeginnerMode && tooltip && (
+                        <Tooltip content={tooltip}>
+                            <span className="text-blue-500 cursor-help" role="img" aria-label="Information">ℹ️</span>
+                        </Tooltip>
+                    )}
+                </div>
+                <div className="flex items-center gap-2">
+                    {onVoiceInput && onListeningChange && (
+                        <VoiceInput
+                            onTranscript={(transcript) => {
+                                onChange({ target: { value: value + ' ' + transcript } } as React.ChangeEvent<HTMLTextAreaElement>);
+                            }}
+                            isListening={isListening}
+                            onListeningChange={onListeningChange}
+                            placeholder="Voice input"
+                        />
+                    )}
+                    {onAiRefine && (
+                        <button
+                            type="button"
+                            onClick={onAiRefine}
+                            disabled={isRefining}
+                            className="flex items-center text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-wait transition-colors px-3 py-1.5 rounded-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                            aria-label={isRefining ? 'AI is refining content' : 'Refine with AI'}
+                        >
+                            {isRefining ? 'Refining...' : 'AI Refine'}
+                            <SparklesIcon className="w-4 h-4 ml-1" aria-hidden="true" />
+                        </button>
+                    )}
+                </div>
             </div>
-            <div className="flex items-center gap-2">
-                {onVoiceInput && onListeningChange && (
-                    <VoiceInput
-                        onTranscript={(transcript) => {
-                            onChange({ target: { value: value + ' ' + transcript } } as React.ChangeEvent<HTMLTextAreaElement>);
-                        }}
-                        isListening={isListening}
-                        onListeningChange={onListeningChange}
-                        placeholder="Voice input"
-                    />
-                )}
-                {onAiRefine && (
-                    <button
-                        onClick={onAiRefine}
-                        disabled={isRefining}
-                        className="flex items-center text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-wait transition-colors"
-                    >
-                        {isRefining ? 'Refining...' : 'AI Refine'}
-                        <SparklesIcon className="w-4 h-4 ml-1" />
-                    </button>
-                )}
-            </div>
+            <textarea 
+                id={textareaId}
+                value={value} 
+                onChange={onChange} 
+                placeholder={isBeginnerMode && example ? example : placeholder} 
+                rows={rows} 
+                className="w-full p-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-300 bg-white text-gray-900 placeholder-gray-400 hover:shadow-md resize-none" 
+                aria-label={label}
+            />
         </div>
-        <textarea 
-            value={value} 
-            onChange={onChange} 
-            placeholder={isBeginnerMode && example ? example : placeholder} 
-            rows={rows} 
-            className="w-full p-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 bg-white text-gray-900 placeholder-gray-400 hover:shadow-md resize-none" 
-        />
-    </div>
-);
+    );
+};
 
 
 export const ResumeForm: React.FC<ResumeFormProps> = ({
@@ -184,10 +196,10 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
     };
 
     return (
-        <div className={`p-8 ${isDarkMode ? 'bg-gray-800/80 border-gray-700 text-gray-100' : 'bg-white/80 border-gray-200'} backdrop-blur-md border shadow-2xl rounded-2xl transition-all duration-500`}>
-            <div className={`mb-6 ${isDarkMode ? 'bg-gradient-to-r from-green-900/20 to-blue-900/20 border-green-700' : 'bg-gradient-to-r from-green-50 to-blue-50 border-green-300'} border rounded-2xl shadow-lg transition-all duration-500`}>
+        <div className={`p-6 md:p-8 ${isDarkMode ? 'bg-gray-800/80 border-gray-700 text-gray-100' : 'bg-white/80 border-gray-200'} backdrop-blur-md border shadow-2xl rounded-2xl transition-all duration-500`}>
+            <div className={`mb-6 md:mb-8 ${isDarkMode ? 'bg-gradient-to-r from-green-900/20 to-blue-900/20 border-green-700' : 'bg-gradient-to-r from-green-50 to-blue-50 border-green-300'} border rounded-2xl shadow-lg transition-all duration-500`}>
                 <details className="group">
-                    <summary className={`p-6 font-semibold text-lg ${isDarkMode ? 'text-white' : 'text-gray-800'} cursor-pointer list-none flex justify-between items-center hover:${isDarkMode ? 'bg-gray-700/30' : 'bg-white/30'} rounded-2xl transition-all duration-300`}>
+                    <summary className={`p-4 md:p-6 font-semibold text-base md:text-lg ${isDarkMode ? 'text-white' : 'text-gray-800'} cursor-pointer list-none flex justify-between items-center hover:${isDarkMode ? 'bg-gray-700/30' : 'bg-white/30'} rounded-2xl transition-all duration-300`}>
                         <div className="flex items-center gap-3">
                             <div className={`p-2 rounded-xl ${isDarkMode ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-green-500 to-blue-500'} shadow-lg`}>
                                 <SparklesIcon className="w-5 h-5 text-white" />
@@ -206,7 +218,8 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
                         </p>
                         <div className="space-y-4">
                             <textarea 
-                                className={`w-full p-4 border ${isDarkMode ? 'border-gray-600 bg-gray-700/50 text-gray-100' : 'border-gray-300 bg-white text-gray-900'} rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 placeholder-gray-500 hover:shadow-md resize-none`}
+                                id="raw-resume-text"
+                                className={`w-full p-4 border ${isDarkMode ? 'border-gray-600 bg-gray-700/50 text-gray-100' : 'border-gray-300 bg-white text-gray-900'} rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-300 placeholder-gray-500 hover:shadow-md resize-none`}
                                 rows={8}
                                 placeholder="Paste your resume details here in any format or language..."
                                 value={rawResumeText}
@@ -221,15 +234,17 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
                             />
                         </div>
                         <button
+                            type="button"
                             onClick={onAutoFill}
                             disabled={isAutoFilling || isGeneratingTool}
-                            className={`w-full mt-4 flex items-center justify-center gap-3 p-4 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-lg ${
+                            className={`w-full mt-4 flex items-center justify-center gap-3 p-4 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
                                 isAutoFilling || isGeneratingTool 
                                     ? 'bg-gray-400 cursor-not-allowed' 
                                     : 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 hover:shadow-xl'
                             }`}
+                            aria-label={isAutoFilling ? 'AI is analyzing and generating content' : 'Generate and fill form with AI'}
                         >
-                            <SparklesIcon className={`w-5 h-5 ${isAutoFilling ? 'animate-spin' : 'animate-pulse'}`}/>
+                            <SparklesIcon className={`w-5 h-5 ${isAutoFilling ? 'animate-spin' : 'animate-pulse'}`} aria-hidden="true" />
                             {isAutoFilling ? 'Analyzing & Generating...' : 'Generate & Fill Form'}
                         </button>
                     </div>
@@ -333,9 +348,14 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
 
             <Section title="Work Experience" isDarkMode={isDarkMode}>
                 {resumeData.experience.map((exp, index) => (
-                    <div key={exp.id} className={`p-6 border ${isDarkMode ? 'border-gray-600 bg-gray-700/30' : 'border-gray-200 bg-gray-50/50'} rounded-2xl mb-6 relative shadow-lg hover:shadow-xl transition-all duration-300`}>
-                         <button onClick={() => removeExperience(exp.id)} className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-colors" aria-label={`Remove ${exp.jobTitle} experience`}>
-                            <TrashIcon className="w-5 h-5"/>
+                    <div key={exp.id} className={`p-4 md:p-6 border ${isDarkMode ? 'border-gray-600 bg-gray-700/30' : 'border-gray-200 bg-gray-50/50'} rounded-2xl mb-6 relative shadow-lg hover:shadow-xl transition-all duration-300`}>
+                         <button 
+                            type="button"
+                            onClick={() => removeExperience(exp.id)} 
+                            className="absolute top-3 right-3 text-red-500 hover:text-red-700 transition-colors p-2 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1" 
+                            aria-label={`Remove ${exp.jobTitle || 'this'} experience`}
+                        >
+                            <TrashIcon className="w-5 h-5" aria-hidden="true" />
                         </button>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <InputField label="Job Title" value={exp.jobTitle} onChange={(e) => onExperienceChange(index, 'jobTitle', e.target.value)} placeholder="e.g. Software Engineer" />
@@ -357,16 +377,26 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
                         />
                     </div>
                 ))}
-                <button onClick={addExperience} className="flex items-center justify-center w-full mt-2 p-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md font-semibold transition-colors">
-                    <AddIcon className="w-5 h-5 mr-2" /> Add Experience
+                <button 
+                    type="button"
+                    onClick={addExperience} 
+                    className="flex items-center justify-center w-full mt-4 p-3 text-white bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    aria-label="Add work experience"
+                >
+                    <AddIcon className="w-5 h-5 mr-2" aria-hidden="true" /> Add Experience
                 </button>
             </Section>
 
             <Section title="Education" isDarkMode={isDarkMode}>
                 {resumeData.education.map((edu, index) => (
-                    <div key={edu.id} className={`p-6 border ${isDarkMode ? 'border-gray-600 bg-gray-700/30' : 'border-gray-200 bg-gray-50/50'} rounded-2xl mb-6 relative shadow-lg hover:shadow-xl transition-all duration-300`}>
-                        <button onClick={() => removeEducation(edu.id)} className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-colors" aria-label={`Remove ${edu.degree} education`}>
-                            <TrashIcon className="w-5 h-5"/>
+                    <div key={edu.id} className={`p-4 md:p-6 border ${isDarkMode ? 'border-gray-600 bg-gray-700/30' : 'border-gray-200 bg-gray-50/50'} rounded-2xl mb-6 relative shadow-lg hover:shadow-xl transition-all duration-300`}>
+                        <button 
+                            type="button"
+                            onClick={() => removeEducation(edu.id)} 
+                            className="absolute top-3 right-3 text-red-500 hover:text-red-700 transition-colors p-2 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1" 
+                            aria-label={`Remove ${edu.degree || 'this'} education`}
+                        >
+                            <TrashIcon className="w-5 h-5" aria-hidden="true" />
                         </button>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <InputField label="Degree / Certificate" value={edu.degree} onChange={(e) => onEducationChange(index, 'degree', e.target.value)} placeholder="e.g. B.S. in Computer Science" />
@@ -376,8 +406,13 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({
                         </div>
                     </div>
                 ))}
-                <button onClick={addEducation} className="flex items-center justify-center w-full mt-2 p-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md font-semibold transition-colors">
-                    <AddIcon className="w-5 h-5 mr-2" /> Add Education
+                <button 
+                    type="button"
+                    onClick={addEducation} 
+                    className="flex items-center justify-center w-full mt-4 p-3 text-white bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    aria-label="Add education"
+                >
+                    <AddIcon className="w-5 h-5 mr-2" aria-hidden="true" /> Add Education
                 </button>
             </Section>
 

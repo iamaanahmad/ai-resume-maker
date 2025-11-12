@@ -2,17 +2,17 @@ import React from 'react';
 
 const DonateSection: React.FC = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-red-50 via-pink-50 to-purple-50">
+    <section className="relative z-0 py-16 md:py-20 bg-gradient-to-br from-red-50 via-pink-50 to-purple-50" aria-label="Support and donate section">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Heart Icon */}
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-full mb-8 shadow-lg">
-          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-full mb-6 md:mb-8 shadow-lg" aria-hidden="true">
+          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
           </svg>
         </div>
 
         {/* Main Message */}
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
           Love Our Free Resume Builder?
         </h2>
         
@@ -23,8 +23,8 @@ const DonateSection: React.FC = () => {
         {/* Benefits List */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
@@ -125,6 +125,7 @@ const DonateSection: React.FC = () => {
           <p className="text-gray-600 mb-4">Can't donate? You can still help us!</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button 
+              type="button"
               onClick={() => {
                 if (navigator.share) {
                   navigator.share({
@@ -141,7 +142,8 @@ const DonateSection: React.FC = () => {
                   });
                 }
               }}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium shadow-md hover:shadow-lg"
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="Share with friends"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />

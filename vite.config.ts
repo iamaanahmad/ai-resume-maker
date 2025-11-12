@@ -14,7 +14,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           ai: ['@google/generative-ai'],
-          pdf: ['html2canvas', 'jspdf']
+          export: ['html2canvas', 'jspdf', 'docx', 'file-saver']
         }
       }
     }
